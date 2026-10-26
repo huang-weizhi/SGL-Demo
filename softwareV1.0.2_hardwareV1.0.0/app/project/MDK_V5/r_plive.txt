@@ -1,0 +1,5 @@
+﻿#define WAVE_MAX_H          192U    /* max area height in pixels */
+#define WAVE_USE_LIVE_MAPPING   1
+1 probe refs
+".\objects\AT32F415CBT7_WorkBench.axf" - 79 Error(s), 1 Warning(s).
+exit 2

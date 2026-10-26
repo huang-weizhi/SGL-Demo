@@ -1,0 +1,13 @@
+﻿--- uvprojx Define lines ---
+<Define>AT32F415CBT7, USE_STDPERIPH_DRIVER</Define>
+<Define></Define>
+--- grep WAVE in uvprojx ---
+<FileName>ui_wave.c</FileName>
+<FilePath>..\ui_base\ui_wave.c</FilePath>
+--- ui_wave.c define lines ---
+23: #define UI_WAVE_BLOCK_W     8U      /* pixels per block */
+24: #define UI_WAVE_GRID_DX     24U     /* grid line spacing x (0 = no grid) */
+25: #define UI_WAVE_GRID_DY     24U     /* grid line spacing y */
+26: #define WAVE_BG_COLOR       BLACK
+27: #define WAVE_GRID_COLOR     0x4208U     /* dark grey */
+28: #define WAVE_LINE_COLOR     YELLOW

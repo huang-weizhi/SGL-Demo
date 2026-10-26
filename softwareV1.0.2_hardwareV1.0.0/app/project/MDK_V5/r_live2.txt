@@ -1,0 +1,5 @@
+﻿#define WAVE_USE_LIVE_MAPPING   1
+#define WAVE_LUT_ENTRIES    256U
+0 probe lines left
+Program Size: Code=30832 RO-data=1000 RW-data=132 ZI-data=26388  
+uv4 exit 1

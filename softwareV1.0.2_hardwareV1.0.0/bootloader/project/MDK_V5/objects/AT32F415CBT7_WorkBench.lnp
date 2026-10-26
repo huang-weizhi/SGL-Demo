@@ -1,0 +1,25 @@
+--cpu=Cortex-M4 --fpu=SoftVFP
+".\objects\main.o"
+".\objects\at32f415_wk_config.o"
+".\objects\at32f415_int.o"
+".\objects\wk_system.o"
+".\objects\wk_crc.o"
+".\objects\wk_debug.o"
+".\objects\wk_usart.o"
+".\objects\wk_gpio.o"
+".\objects\iap.o"
+".\objects\flash.o"
+".\objects\at32f415_crc.o"
+".\objects\at32f415_crm.o"
+".\objects\at32f415_debug.o"
+".\objects\at32f415_flash.o"
+".\objects\at32f415_gpio.o"
+".\objects\at32f415_misc.o"
+".\objects\at32f415_pwc.o"
+".\objects\at32f415_usart.o"
+".\objects\system_at32f415.o"
+".\objects\startup_at32f415.o"
+--library_type=microlib --strict --scatter ".\objects\AT32F415CBT7_WorkBench.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list ".\listings\AT32F415CBT7_WorkBench.map" -o .\objects\AT32F415CBT7_WorkBench.axf

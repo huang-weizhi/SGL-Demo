@@ -1,0 +1,4 @@
+﻿../ui_base/ui_wave.c(65): error: LUTMODE_PROBE
+65 | #error LUTMODE_PROBE
+1 error generated.
+".\objects\AT32F415CBT7_WorkBench.axf" - 1 Error(s), 1 Warning(s).

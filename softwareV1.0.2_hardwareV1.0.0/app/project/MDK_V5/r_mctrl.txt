@@ -1,0 +1,27 @@
+﻿compiling ui_wave.c...
+Program Size: Code=30832 RO-data=1000 RW-data=132 ZI-data=26388
+".\objects\AT32F415CBT7_WorkBench.axf" - 0 Error(s), 1 Warning(s).
+Build Time Elapsed:  00:00:06
+ui_wave.c:6: *   1. the area is split into vertical blocks of UI_WAVE_BLOCK_W pixels
+ui_wave.c:23: #define UI_WAVE_BLOCK_W     8U      /* pixels per block */
+ui_wave.c:39: uint8_t  dirty[(WAVE_MAX_COLS + UI_WAVE_BLOCK_W - 1) / UI_WAVE_BLOCK_W];
+ui_wave.c:55: uint8_t  lut[WAVE_LUT_ENTRIES];                 /* value -> row (lookup mode) */
+ui_wave.c:75: if (w == 0 || h == 0 || w > WAVE_MAX_COLS || h > WAVE_MAX_H)
+ui_wave.c:84: wv.blocks = (uint16_t)((w + UI_WAVE_BLOCK_W - 1) / UI_WAVE_BLOCK_W);
+ui_wave.c:156: wv.dirty[col / UI_WAVE_BLOCK_W] = 1;
+ui_wave.c:159: wv.dirty[(col - 1) / UI_WAVE_BLOCK_W] = 1;
+ui_wave.c:163: wv.dirty[(col + 1) / UI_WAVE_BLOCK_W] = 1;
+ui_wave.c:248: static uint16_t wave_block_width(uint16_t blk)
+ui_wave.c:250: uint16_t bw = wv.w - blk * UI_WAVE_BLOCK_W;
+ui_wave.c:252: return (bw > UI_WAVE_BLOCK_W) ? UI_WAVE_BLOCK_W : bw;
+ui_wave.c:306: return (int16_t)wv.lut[idx];
+ui_wave.c:339: wv.lut[i] = 0;
+ui_wave.c:354: wv.lut[i] = (uint8_t)off;
+ui_wave.c:374: uint16_t bw = wave_block_width(blk);
+ui_wave.c:375: uint16_t gx = wv.x + blk * UI_WAVE_BLOCK_W;     /* global x of the block */
+ui_wave.c:399: uint16_t col = blk * UI_WAVE_BLOCK_W + i;
+ui_wave.c:440: uint16_t bw = wave_block_width(blk);
+ui_wave.c:442: lcd_blit_start(wv.x + blk * UI_WAVE_BLOCK_W, wv.y,
+ui_wave.h:23: /* capacity limits (RAM = 2 buffers * 8 * WAVE_MAX_H * 2 bytes) */
+ui_wave.h:25: #define WAVE_MAX_H          96U    /* max area height in pixels */
+ui_wave.h:26: #define WAVE_MAX_BLOCK_PX   (8U * WAVE_MAX_H)   /* pixels in one block */

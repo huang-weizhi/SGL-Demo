@@ -1,0 +1,294 @@
+Dependencies for Project 'AT32F415CBT7_WorkBench', Target 'AT32F415CBT7_WorkBench': (DO NOT MODIFY !)
+CompilerVersion: 6220000::V6.22::ARMCLANG
+F (..\src\main.c)(0x6AD58B5C)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m4 -mfpu=none -mfloat-abi=soft -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O1 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../../libraries/drivers/inc -I ../../libraries/cmsis/cm4/core_support -I ../../libraries/cmsis/cm4/device_support -I ../inc-I"D:/Work Program/Keil_v5/ARM/Packs/ArteryTek/AT32F415_DFP/2.1.7/Device/Include"-D__UVISION_VERSION="540" -DAT32F415CBT7 -DAT32F415CBT7 -DUSE_STDPERIPH_DRIVER-o ./objects/main.o -MMD)
+I (..\inc\at32f415_wk_config.h)(0x69CF2700)
+I (..\..\libraries\cmsis\cm4\device_support\at32f415.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\core_support\core_cm4.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\device_support\system_at32f415.h)(0x697B243B)
+I (..\..\libraries\drivers\inc\at32f415_def.h)(0x697B243C)
+I (..\inc\at32f415_conf.h)(0x69CF2701)
+I (..\..\libraries\drivers\inc\at32f415_crc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_crm.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_debug.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_flash.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_gpio.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_misc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_pwc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_usart.h)(0x697B243C)
+I (..\inc\wk_crc.h)(0x69CF2700)
+I (..\inc\wk_debug.h)(0x69CF2700)
+I (..\inc\wk_usart.h)(0x69CF2700)
+I (..\inc\wk_gpio.h)(0x69CF2700)
+I (..\inc\wk_system.h)(0x69CF2701)
+I (..\inc\at32f415_int.h)(0x69CF2701)
+I (..\inc\iap.h)(0x694D1C9F)
+I (..\inc\flash.h)(0x69CA12A6)
+F (..\src\at32f415_wk_config.c)(0x69CF2700)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m4 -mfpu=none -mfloat-abi=soft -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O1 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../../libraries/drivers/inc -I ../../libraries/cmsis/cm4/core_support -I ../../libraries/cmsis/cm4/device_support -I ../inc-I"D:/Work Program/Keil_v5/ARM/Packs/ArteryTek/AT32F415_DFP/2.1.7/Device/Include"-D__UVISION_VERSION="540" -DAT32F415CBT7 -DAT32F415CBT7 -DUSE_STDPERIPH_DRIVER-o ./objects/at32f415_wk_config.o -MMD)
+I (..\inc\at32f415_wk_config.h)(0x69CF2700)
+I (..\..\libraries\cmsis\cm4\device_support\at32f415.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\core_support\core_cm4.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\device_support\system_at32f415.h)(0x697B243B)
+I (..\..\libraries\drivers\inc\at32f415_def.h)(0x697B243C)
+I (..\inc\at32f415_conf.h)(0x69CF2701)
+I (..\..\libraries\drivers\inc\at32f415_crc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_crm.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_debug.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_flash.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_gpio.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_misc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_pwc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_usart.h)(0x697B243C)
+F (..\src\at32f415_int.c)(0x6AC9D9FB)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m4 -mfpu=none -mfloat-abi=soft -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O1 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../../libraries/drivers/inc -I ../../libraries/cmsis/cm4/core_support -I ../../libraries/cmsis/cm4/device_support -I ../inc-I"D:/Work Program/Keil_v5/ARM/Packs/ArteryTek/AT32F415_DFP/2.1.7/Device/Include"-D__UVISION_VERSION="540" -DAT32F415CBT7 -DAT32F415CBT7 -DUSE_STDPERIPH_DRIVER-o ./objects/at32f415_int.o -MMD)
+I (..\inc\at32f415_int.h)(0x69CF2701)
+I (..\..\libraries\cmsis\cm4\device_support\at32f415.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\core_support\core_cm4.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\device_support\system_at32f415.h)(0x697B243B)
+I (..\..\libraries\drivers\inc\at32f415_def.h)(0x697B243C)
+I (..\inc\at32f415_conf.h)(0x69CF2701)
+I (..\..\libraries\drivers\inc\at32f415_crc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_crm.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_debug.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_flash.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_gpio.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_misc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_pwc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_usart.h)(0x697B243C)
+I (..\inc\wk_system.h)(0x69CF2701)
+I (..\inc\flash.h)(0x69CA12A6)
+F (..\src\wk_system.c)(0x69CF2701)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m4 -mfpu=none -mfloat-abi=soft -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O1 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../../libraries/drivers/inc -I ../../libraries/cmsis/cm4/core_support -I ../../libraries/cmsis/cm4/device_support -I ../inc-I"D:/Work Program/Keil_v5/ARM/Packs/ArteryTek/AT32F415_DFP/2.1.7/Device/Include"-D__UVISION_VERSION="540" -DAT32F415CBT7 -DAT32F415CBT7 -DUSE_STDPERIPH_DRIVER-o ./objects/wk_system.o -MMD)
+I (..\inc\wk_system.h)(0x69CF2701)
+I (..\..\libraries\cmsis\cm4\device_support\at32f415.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\core_support\core_cm4.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\device_support\system_at32f415.h)(0x697B243B)
+I (..\..\libraries\drivers\inc\at32f415_def.h)(0x697B243C)
+I (..\inc\at32f415_conf.h)(0x69CF2701)
+I (..\..\libraries\drivers\inc\at32f415_crc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_crm.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_debug.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_flash.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_gpio.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_misc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_pwc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_usart.h)(0x697B243C)
+F (..\src\wk_crc.c)(0x69CF2700)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m4 -mfpu=none -mfloat-abi=soft -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O1 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../../libraries/drivers/inc -I ../../libraries/cmsis/cm4/core_support -I ../../libraries/cmsis/cm4/device_support -I ../inc-I"D:/Work Program/Keil_v5/ARM/Packs/ArteryTek/AT32F415_DFP/2.1.7/Device/Include"-D__UVISION_VERSION="540" -DAT32F415CBT7 -DAT32F415CBT7 -DUSE_STDPERIPH_DRIVER-o ./objects/wk_crc.o -MMD)
+I (..\inc\wk_crc.h)(0x69CF2700)
+I (..\inc\at32f415_wk_config.h)(0x69CF2700)
+I (..\..\libraries\cmsis\cm4\device_support\at32f415.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\core_support\core_cm4.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\device_support\system_at32f415.h)(0x697B243B)
+I (..\..\libraries\drivers\inc\at32f415_def.h)(0x697B243C)
+I (..\inc\at32f415_conf.h)(0x69CF2701)
+I (..\..\libraries\drivers\inc\at32f415_crc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_crm.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_debug.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_flash.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_gpio.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_misc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_pwc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_usart.h)(0x697B243C)
+F (..\src\wk_debug.c)(0x69CF2700)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m4 -mfpu=none -mfloat-abi=soft -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O1 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../../libraries/drivers/inc -I ../../libraries/cmsis/cm4/core_support -I ../../libraries/cmsis/cm4/device_support -I ../inc-I"D:/Work Program/Keil_v5/ARM/Packs/ArteryTek/AT32F415_DFP/2.1.7/Device/Include"-D__UVISION_VERSION="540" -DAT32F415CBT7 -DAT32F415CBT7 -DUSE_STDPERIPH_DRIVER-o ./objects/wk_debug.o -MMD)
+I (..\inc\wk_debug.h)(0x69CF2700)
+I (..\inc\at32f415_wk_config.h)(0x69CF2700)
+I (..\..\libraries\cmsis\cm4\device_support\at32f415.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\core_support\core_cm4.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\device_support\system_at32f415.h)(0x697B243B)
+I (..\..\libraries\drivers\inc\at32f415_def.h)(0x697B243C)
+I (..\inc\at32f415_conf.h)(0x69CF2701)
+I (..\..\libraries\drivers\inc\at32f415_crc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_crm.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_debug.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_flash.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_gpio.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_misc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_pwc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_usart.h)(0x697B243C)
+F (..\src\wk_usart.c)(0x69CF2700)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m4 -mfpu=none -mfloat-abi=soft -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O1 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../../libraries/drivers/inc -I ../../libraries/cmsis/cm4/core_support -I ../../libraries/cmsis/cm4/device_support -I ../inc-I"D:/Work Program/Keil_v5/ARM/Packs/ArteryTek/AT32F415_DFP/2.1.7/Device/Include"-D__UVISION_VERSION="540" -DAT32F415CBT7 -DAT32F415CBT7 -DUSE_STDPERIPH_DRIVER-o ./objects/wk_usart.o -MMD)
+I (..\inc\wk_usart.h)(0x69CF2700)
+I (..\inc\at32f415_wk_config.h)(0x69CF2700)
+I (..\..\libraries\cmsis\cm4\device_support\at32f415.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\core_support\core_cm4.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\device_support\system_at32f415.h)(0x697B243B)
+I (..\..\libraries\drivers\inc\at32f415_def.h)(0x697B243C)
+I (..\inc\at32f415_conf.h)(0x69CF2701)
+I (..\..\libraries\drivers\inc\at32f415_crc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_crm.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_debug.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_flash.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_gpio.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_misc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_pwc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_usart.h)(0x697B243C)
+F (..\src\wk_gpio.c)(0x69CF2700)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m4 -mfpu=none -mfloat-abi=soft -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O1 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../../libraries/drivers/inc -I ../../libraries/cmsis/cm4/core_support -I ../../libraries/cmsis/cm4/device_support -I ../inc-I"D:/Work Program/Keil_v5/ARM/Packs/ArteryTek/AT32F415_DFP/2.1.7/Device/Include"-D__UVISION_VERSION="540" -DAT32F415CBT7 -DAT32F415CBT7 -DUSE_STDPERIPH_DRIVER-o ./objects/wk_gpio.o -MMD)
+I (..\inc\wk_gpio.h)(0x69CF2700)
+I (..\inc\at32f415_wk_config.h)(0x69CF2700)
+I (..\..\libraries\cmsis\cm4\device_support\at32f415.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\core_support\core_cm4.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\device_support\system_at32f415.h)(0x697B243B)
+I (..\..\libraries\drivers\inc\at32f415_def.h)(0x697B243C)
+I (..\inc\at32f415_conf.h)(0x69CF2701)
+I (..\..\libraries\drivers\inc\at32f415_crc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_crm.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_debug.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_flash.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_gpio.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_misc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_pwc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_usart.h)(0x697B243C)
+F (..\src\iap.c)(0x69E9884B)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m4 -mfpu=none -mfloat-abi=soft -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O1 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../../libraries/drivers/inc -I ../../libraries/cmsis/cm4/core_support -I ../../libraries/cmsis/cm4/device_support -I ../inc-I"D:/Work Program/Keil_v5/ARM/Packs/ArteryTek/AT32F415_DFP/2.1.7/Device/Include"-D__UVISION_VERSION="540" -DAT32F415CBT7 -DAT32F415CBT7 -DUSE_STDPERIPH_DRIVER-o ./objects/iap.o -MMD)
+I (..\inc\iap.h)(0x694D1C9F)
+I (..\..\libraries\cmsis\cm4\device_support\at32f415.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\core_support\core_cm4.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\device_support\system_at32f415.h)(0x697B243B)
+I (..\..\libraries\drivers\inc\at32f415_def.h)(0x697B243C)
+I (..\inc\at32f415_conf.h)(0x69CF2701)
+I (..\..\libraries\drivers\inc\at32f415_crc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_crm.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_debug.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_flash.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_gpio.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_misc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_pwc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_usart.h)(0x697B243C)
+I (..\inc\flash.h)(0x69CA12A6)
+F (..\src\flash.c)(0x694D1C9F)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m4 -mfpu=none -mfloat-abi=soft -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O1 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../../libraries/drivers/inc -I ../../libraries/cmsis/cm4/core_support -I ../../libraries/cmsis/cm4/device_support -I ../inc-I"D:/Work Program/Keil_v5/ARM/Packs/ArteryTek/AT32F415_DFP/2.1.7/Device/Include"-D__UVISION_VERSION="540" -DAT32F415CBT7 -DAT32F415CBT7 -DUSE_STDPERIPH_DRIVER-o ./objects/flash.o -MMD)
+I (..\inc\flash.h)(0x69CA12A6)
+I (..\..\libraries\cmsis\cm4\device_support\at32f415.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\core_support\core_cm4.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\device_support\system_at32f415.h)(0x697B243B)
+I (..\..\libraries\drivers\inc\at32f415_def.h)(0x697B243C)
+I (..\inc\at32f415_conf.h)(0x69CF2701)
+I (..\..\libraries\drivers\inc\at32f415_crc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_crm.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_debug.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_flash.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_gpio.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_misc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_pwc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_usart.h)(0x697B243C)
+F (..\..\libraries\drivers\src\at32f415_crc.c)(0x697B243C)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m4 -mfpu=none -mfloat-abi=soft -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O1 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../../libraries/drivers/inc -I ../../libraries/cmsis/cm4/core_support -I ../../libraries/cmsis/cm4/device_support -I ../inc-I"D:/Work Program/Keil_v5/ARM/Packs/ArteryTek/AT32F415_DFP/2.1.7/Device/Include"-D__UVISION_VERSION="540" -DAT32F415CBT7 -DAT32F415CBT7 -DUSE_STDPERIPH_DRIVER-o ./objects/at32f415_crc.o -MMD)
+I (..\inc\at32f415_conf.h)(0x69CF2701)
+I (..\..\libraries\drivers\inc\at32f415_crc.h)(0x697B243C)
+I (..\..\libraries\cmsis\cm4\device_support\at32f415.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\core_support\core_cm4.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\device_support\system_at32f415.h)(0x697B243B)
+I (..\..\libraries\drivers\inc\at32f415_def.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_crm.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_debug.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_flash.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_gpio.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_misc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_pwc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_usart.h)(0x697B243C)
+F (..\..\libraries\drivers\src\at32f415_crm.c)(0x697B243C)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m4 -mfpu=none -mfloat-abi=soft -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O1 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../../libraries/drivers/inc -I ../../libraries/cmsis/cm4/core_support -I ../../libraries/cmsis/cm4/device_support -I ../inc-I"D:/Work Program/Keil_v5/ARM/Packs/ArteryTek/AT32F415_DFP/2.1.7/Device/Include"-D__UVISION_VERSION="540" -DAT32F415CBT7 -DAT32F415CBT7 -DUSE_STDPERIPH_DRIVER-o ./objects/at32f415_crm.o -MMD)
+I (..\inc\at32f415_conf.h)(0x69CF2701)
+I (..\..\libraries\drivers\inc\at32f415_crc.h)(0x697B243C)
+I (..\..\libraries\cmsis\cm4\device_support\at32f415.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\core_support\core_cm4.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\device_support\system_at32f415.h)(0x697B243B)
+I (..\..\libraries\drivers\inc\at32f415_def.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_crm.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_debug.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_flash.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_gpio.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_misc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_pwc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_usart.h)(0x697B243C)
+F (..\..\libraries\drivers\src\at32f415_debug.c)(0x697B243C)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m4 -mfpu=none -mfloat-abi=soft -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O1 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../../libraries/drivers/inc -I ../../libraries/cmsis/cm4/core_support -I ../../libraries/cmsis/cm4/device_support -I ../inc-I"D:/Work Program/Keil_v5/ARM/Packs/ArteryTek/AT32F415_DFP/2.1.7/Device/Include"-D__UVISION_VERSION="540" -DAT32F415CBT7 -DAT32F415CBT7 -DUSE_STDPERIPH_DRIVER-o ./objects/at32f415_debug.o -MMD)
+I (..\inc\at32f415_conf.h)(0x69CF2701)
+I (..\..\libraries\drivers\inc\at32f415_crc.h)(0x697B243C)
+I (..\..\libraries\cmsis\cm4\device_support\at32f415.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\core_support\core_cm4.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\device_support\system_at32f415.h)(0x697B243B)
+I (..\..\libraries\drivers\inc\at32f415_def.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_crm.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_debug.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_flash.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_gpio.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_misc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_pwc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_usart.h)(0x697B243C)
+F (..\..\libraries\drivers\src\at32f415_flash.c)(0x697B243C)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m4 -mfpu=none -mfloat-abi=soft -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O1 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../../libraries/drivers/inc -I ../../libraries/cmsis/cm4/core_support -I ../../libraries/cmsis/cm4/device_support -I ../inc-I"D:/Work Program/Keil_v5/ARM/Packs/ArteryTek/AT32F415_DFP/2.1.7/Device/Include"-D__UVISION_VERSION="540" -DAT32F415CBT7 -DAT32F415CBT7 -DUSE_STDPERIPH_DRIVER-o ./objects/at32f415_flash.o -MMD)
+I (..\inc\at32f415_conf.h)(0x69CF2701)
+I (..\..\libraries\drivers\inc\at32f415_crc.h)(0x697B243C)
+I (..\..\libraries\cmsis\cm4\device_support\at32f415.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\core_support\core_cm4.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\device_support\system_at32f415.h)(0x697B243B)
+I (..\..\libraries\drivers\inc\at32f415_def.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_crm.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_debug.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_flash.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_gpio.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_misc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_pwc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_usart.h)(0x697B243C)
+F (..\..\libraries\drivers\src\at32f415_gpio.c)(0x697B243C)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m4 -mfpu=none -mfloat-abi=soft -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O1 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../../libraries/drivers/inc -I ../../libraries/cmsis/cm4/core_support -I ../../libraries/cmsis/cm4/device_support -I ../inc-I"D:/Work Program/Keil_v5/ARM/Packs/ArteryTek/AT32F415_DFP/2.1.7/Device/Include"-D__UVISION_VERSION="540" -DAT32F415CBT7 -DAT32F415CBT7 -DUSE_STDPERIPH_DRIVER-o ./objects/at32f415_gpio.o -MMD)
+I (..\inc\at32f415_conf.h)(0x69CF2701)
+I (..\..\libraries\drivers\inc\at32f415_crc.h)(0x697B243C)
+I (..\..\libraries\cmsis\cm4\device_support\at32f415.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\core_support\core_cm4.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\device_support\system_at32f415.h)(0x697B243B)
+I (..\..\libraries\drivers\inc\at32f415_def.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_crm.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_debug.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_flash.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_gpio.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_misc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_pwc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_usart.h)(0x697B243C)
+F (..\..\libraries\drivers\src\at32f415_misc.c)(0x697B243C)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m4 -mfpu=none -mfloat-abi=soft -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O1 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../../libraries/drivers/inc -I ../../libraries/cmsis/cm4/core_support -I ../../libraries/cmsis/cm4/device_support -I ../inc-I"D:/Work Program/Keil_v5/ARM/Packs/ArteryTek/AT32F415_DFP/2.1.7/Device/Include"-D__UVISION_VERSION="540" -DAT32F415CBT7 -DAT32F415CBT7 -DUSE_STDPERIPH_DRIVER-o ./objects/at32f415_misc.o -MMD)
+I (..\inc\at32f415_conf.h)(0x69CF2701)
+I (..\..\libraries\drivers\inc\at32f415_crc.h)(0x697B243C)
+I (..\..\libraries\cmsis\cm4\device_support\at32f415.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\core_support\core_cm4.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\device_support\system_at32f415.h)(0x697B243B)
+I (..\..\libraries\drivers\inc\at32f415_def.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_crm.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_debug.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_flash.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_gpio.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_misc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_pwc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_usart.h)(0x697B243C)
+F (..\..\libraries\drivers\src\at32f415_pwc.c)(0x697B243C)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m4 -mfpu=none -mfloat-abi=soft -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O1 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../../libraries/drivers/inc -I ../../libraries/cmsis/cm4/core_support -I ../../libraries/cmsis/cm4/device_support -I ../inc-I"D:/Work Program/Keil_v5/ARM/Packs/ArteryTek/AT32F415_DFP/2.1.7/Device/Include"-D__UVISION_VERSION="540" -DAT32F415CBT7 -DAT32F415CBT7 -DUSE_STDPERIPH_DRIVER-o ./objects/at32f415_pwc.o -MMD)
+I (..\inc\at32f415_conf.h)(0x69CF2701)
+I (..\..\libraries\drivers\inc\at32f415_crc.h)(0x697B243C)
+I (..\..\libraries\cmsis\cm4\device_support\at32f415.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\core_support\core_cm4.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\device_support\system_at32f415.h)(0x697B243B)
+I (..\..\libraries\drivers\inc\at32f415_def.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_crm.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_debug.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_flash.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_gpio.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_misc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_pwc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_usart.h)(0x697B243C)
+F (..\..\libraries\drivers\src\at32f415_usart.c)(0x697B243C)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m4 -mfpu=none -mfloat-abi=soft -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O1 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../../libraries/drivers/inc -I ../../libraries/cmsis/cm4/core_support -I ../../libraries/cmsis/cm4/device_support -I ../inc-I"D:/Work Program/Keil_v5/ARM/Packs/ArteryTek/AT32F415_DFP/2.1.7/Device/Include"-D__UVISION_VERSION="540" -DAT32F415CBT7 -DAT32F415CBT7 -DUSE_STDPERIPH_DRIVER-o ./objects/at32f415_usart.o -MMD)
+I (..\inc\at32f415_conf.h)(0x69CF2701)
+I (..\..\libraries\drivers\inc\at32f415_crc.h)(0x697B243C)
+I (..\..\libraries\cmsis\cm4\device_support\at32f415.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\core_support\core_cm4.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\device_support\system_at32f415.h)(0x697B243B)
+I (..\..\libraries\drivers\inc\at32f415_def.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_crm.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_debug.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_flash.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_gpio.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_misc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_pwc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_usart.h)(0x697B243C)
+F (..\..\libraries\cmsis\cm4\device_support\system_at32f415.c)(0x697B243B)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m4 -mfpu=none -mfloat-abi=soft -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O1 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../../libraries/drivers/inc -I ../../libraries/cmsis/cm4/core_support -I ../../libraries/cmsis/cm4/device_support -I ../inc-I"D:/Work Program/Keil_v5/ARM/Packs/ArteryTek/AT32F415_DFP/2.1.7/Device/Include"-D__UVISION_VERSION="540" -DAT32F415CBT7 -DAT32F415CBT7 -DUSE_STDPERIPH_DRIVER-o ./objects/system_at32f415.o -MMD)
+I (..\..\libraries\cmsis\cm4\device_support\at32f415.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\core_support\core_cm4.h)(0x697B243B)
+I (..\..\libraries\cmsis\cm4\device_support\system_at32f415.h)(0x697B243B)
+I (..\..\libraries\drivers\inc\at32f415_def.h)(0x697B243C)
+I (..\inc\at32f415_conf.h)(0x69CF2701)
+I (..\..\libraries\drivers\inc\at32f415_crc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_crm.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_debug.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_flash.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_gpio.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_misc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_pwc.h)(0x697B243C)
+I (..\..\libraries\drivers\inc\at32f415_usart.h)(0x697B243C)
+F (.\startup_at32f415.s)(0x69CF2700)(--cpu Cortex-M4 --fpu=SoftVFP -g --pd "__MICROLIB SETA 1" --diag_suppress=A1950W-I"D:\Work Program\Keil_v5\ARM\Packs\ArteryTek\AT32F415_DFP\2.1.7\Device\Include"--pd "__UVISION_VERSION SETA 540"--pd "AT32F415CBT7 SETA 1"--list .\listings\startup_at32f415.lst--xref -o .\objects\startup_at32f415.o--depend .\objects\startup_at32f415.d)

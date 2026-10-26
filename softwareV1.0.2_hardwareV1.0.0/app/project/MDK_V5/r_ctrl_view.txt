@@ -1,0 +1,1 @@
+﻿#define WAVE_MAX_H          96U    /* max area height in pixels */ | #define WAVE_USE_LIVE_MAPPING   1 | #define WAVE_LUT_ENTRIES    256U | Program Size: Code=30832 RO-data=1000 RW-data=132 ZI-data=26388   | uv4 exit 1

@@ -1,0 +1,13 @@
+﻿c size 15736  time 09/17/2026 12:20:10
+c md5 E4A64F12DA0629E4726A09803A1486BC
+h md5 C37E06302BC03F8558F7762288FB7B46
+c lut matches: 5
+c probe matches: 1
+h live matches: 1
+dep file ui_wave deps:
+./objects/ui_wave.o: ..\ui_base\ui_wave.c ..\ui_base\ui_wave.h \
+  ..\..\libraries\cmsis\cm4\device_support\at32f415.h \
+  ..\..\libraries\cmsis\cm4\core_support\core_cm4.h \
+  ..\..\libraries\cmsis\cm4\device_support\system_at32f415.h \
+  ..\..\libraries\drivers\inc\at32f415_def.h ..\inc\at32f415_conf.h \
+  ..\..\libraries\drivers\inc\at32f415_adc.h \

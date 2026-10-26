@@ -1,0 +1,17 @@
+﻿axf: 09/17/2026 12:17:57  size 252948
+--- fromelf ---
+
+========================================================================
+
+** Object/Image Component Sizes
+
+      Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
+
+     30832         86       1000        136      26384     192509   objects\AT32F415CBT7_WorkBench.axf
+     30832         86       1000        136          0          0   ROM Totals for objects\AT32F415CBT7_WorkBench.axf
+--- src state ---
+*       uses WAVE_LUT_ENTRIES bytes of extra RAM
+#define WAVE_USE_LIVE_MAPPING   0
+/* lookup table resolution, only used when WAVE_USE_LIVE_MAPPING == 0.
+#define WAVE_LUT_ENTRIES    4096U
+lut in .c: 5

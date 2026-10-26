@@ -1,0 +1,1225 @@
+#include "input_handle.h"
+
+#define KEY_COUNT 5
+#define KEY_SCAN_TIME 20
+KEY_DEFINE(key_heatting, IN_KEY_SET_L_GPIO_PORT, IN_KEY_SET_L_PIN, 0);
+KEY_DEFINE(key_channel, IN_KEY_ADD_L_GPIO_PORT, IN_KEY_ADD_L_PIN, 0);
+KEY_DEFINE(key_add, IN_KEY_DOWN_L_GPIO_PORT, IN_KEY_DOWN_L_PIN, 0);
+KEY_DEFINE(key_redece, IN_KEY_CH1_L_GPIO_PORT, IN_KEY_CH1_L_PIN, 0);
+KEY_DEFINE(key_set, IN_KEY_CH2_L_GPIO_PORT, IN_KEY_CH2_L_PIN, 0);
+
+key_obj *keys[KEY_COUNT] = {&key_heatting, &key_channel, &key_add, &key_redece, &key_set};
+key_event_t key_event[KEY_COUNT];
+static KEY_INPUT_EVENT KEY_HANDLE_EVENT = END_EVENT;
+/* set while the heating fault is being acknowledged: the press that stops the
+ * alarm is swallowed (its press event, its release event and a long press
+ * repeat) until the key is released again */
+static bool s_fault_key_swallow = false;
+
+static void get_key_events(CZ01_t *this)
+{
+    static bool first_in = true;
+
+    if (first_in)
+    {
+        first_in = false;
+        key_set_scan_interval(KEY_SCAN_TIME);
+        key_set_timing_simple(&key_heatting, KEY_SCAN_TIME, 800, 0, 0);
+        key_set_timing_simple(&key_channel, KEY_SCAN_TIME, 800, 0, 0);
+        key_set_timing_simple(&key_add, KEY_SCAN_TIME, 800, 0, 100);
+        key_set_timing_simple(&key_redece, KEY_SCAN_TIME, 800, 0, 100);
+        key_set_timing_simple(&key_set, KEY_SCAN_TIME, 800, 300, 100);
+    }
+
+    for (int i = 0; i < KEY_COUNT; i++)
+    {
+        key_event[i] = key_event_check(keys[i]);
+    }
+
+    if (key_event[0] == KEY_NONE &&
+            key_event[1] == KEY_NONE &&
+            key_event[2] == KEY_NONE &&
+            key_event[3] == KEY_NONE &&
+            key_event[4] == KEY_NONE)
+    {
+        if (this->key_setting_flag)
+        {
+            if (++this->key_setting_time >= 50)
+            {
+                this->key_setting_time = 0;
+                this->key_setting_flag = false;
+            }
+        }
+    }
+    else
+    {
+        this->key_setting_flag = true;
+        this->key_setting_time = 0;
+    }
+
+    /* heatting key */
+    switch (key_event[0])
+    {
+    case KEY_SHORT_PRESS:
+		
+	    if (this->hetting_error_state != HEATTING_OK)
+        {
+            this->hetting_error_state = HEATTING_OK;
+            break;
+        }
+	
+        if (this->page == PAGE_CURVE ||
+                this->page == PAGE_VALUE)
+        {
+            KEY_HANDLE_EVENT = SELECT_HEATTING;
+        }
+
+    default:
+        break;
+    }
+
+    /* channel key */
+    switch (key_event[1])
+    {
+        
+    case KEY_SHORT_PRESS:
+		if (this->hetting_error_state != HEATTING_OK)
+        {
+            this->hetting_error_state = HEATTING_OK;
+            break;
+        }
+
+        if (this->page == PAGE_CURVE ||
+                this->page == PAGE_VALUE)
+        {
+            KEY_HANDLE_EVENT = SELECT_CHANNEL;
+        }
+
+        break;
+
+    case KEY_LONG_PRESS:
+        if (this->page == PAGE_CURVE ||
+                this->page == PAGE_VALUE)
+        {
+            KEY_HANDLE_EVENT = SAVE_CHANNEL;
+        }
+
+        break;
+
+    default:
+        break;
+    }
+
+    /* add key */
+    switch (key_event[2])
+    {
+        
+
+    case KEY_SHORT_PRESS:
+		if (this->hetting_error_state != HEATTING_OK)
+        {
+            this->hetting_error_state = HEATTING_OK;
+            break;
+        }
+        if (this->page == PAGE_CURVE ||
+                this->page == PAGE_VALUE)
+        {
+            if (this->key_setting_select == SELECT_SETTING_TEMP)
+            {
+                KEY_HANDLE_EVENT = TEMP_ADD;
+            }
+            else
+            {
+                KEY_HANDLE_EVENT = TIME_ADD;
+            }
+        }
+        /* in menu */
+        else if (this->page >= PAGE_MENU_SELECT_SHOW_STYLE_CN &&
+                 this->page <= PAGE_MENU_UNSELECT_RETURN_MENU_EN)
+        {
+            KEY_HANDLE_EVENT = MENU_SELECT_REDUCE;
+        }
+        /* in settings */
+        else if (this->page == PAGE_SETTING_SHOW_STYLE_CN ||
+                 this->page == PAGE_SETTING_SHOW_STYLE_EN)
+        {
+            KEY_HANDLE_EVENT = SETTING_SHOW_STYLE;
+        }
+        else if (this->page == PAGE_SETTING_UNIT_CN ||
+                 this->page == PAGE_SETTING_UNIT_EN)
+        {
+            KEY_HANDLE_EVENT = SETTING_UNIT;
+        }
+        else if (this->page == PAGE_SETTING_CALTEMP_CN ||
+                 this->page == PAGE_SETTING_CALTEMP_EN)
+        {
+            KEY_HANDLE_EVENT = CALTEMP_ADD;
+        }
+        else if (this->page == PAGE_SETTING_CN ||
+                 this->page == PAGE_SETTING_EN)
+        {
+            KEY_HANDLE_EVENT = SETTING_LANGUAGE;
+        }
+        else if (this->page == PAGE_SETTING_SPEAKER_CN ||
+                 this->page == PAGE_SETTING_SPEAKER_EN)
+        {
+            KEY_HANDLE_EVENT = SETTING_SPEAKER;
+        }
+        else if (this->page == PAGE_SETTING_UNSELECT_RESET_CN ||
+                 this->page == PAGE_SETTING_UNSELECT_RESET_EN ||
+                 PAGE_SETTING_SELECT_RESET_CN ||
+                 PAGE_SETTING_SELECT_RESET_EN ||
+                 PAGE_SETTING_RESET_DONE_CN ||
+                 PAGE_SETTING_RESET_DONE_EN)
+        {
+            KEY_HANDLE_EVENT = SETTING_RESET;
+        }
+
+        break;
+
+    case KEY_LONG_PRESS_CONTINUE:
+        if (this->page == PAGE_CURVE ||
+                this->page == PAGE_VALUE)
+        {
+            if (this->key_setting_select == SELECT_SETTING_TEMP)
+            {
+                KEY_HANDLE_EVENT = TEMP_ADD_FIVE;
+            }
+            else
+            {
+                KEY_HANDLE_EVENT = TIME_ADD_FIVE;
+            }
+        }
+        else if (this->page == PAGE_SETTING_CALTEMP_CN ||
+                 this->page == PAGE_SETTING_CALTEMP_EN)
+        {
+            KEY_HANDLE_EVENT = CALTEMP_ADD_FIVE;
+        }
+
+        break;
+
+    default:
+        break;
+    }
+
+    /* reduce key */
+    switch (key_event[3])
+    {
+        
+
+    case KEY_SHORT_PRESS:
+		if (this->hetting_error_state != HEATTING_OK)
+        {
+            this->hetting_error_state = HEATTING_OK;
+            break;
+        }
+        if (this->page == PAGE_CURVE ||
+                this->page == PAGE_VALUE)
+        {
+            if (this->key_setting_select == SELECT_SETTING_TEMP)
+            {
+                KEY_HANDLE_EVENT = TEMP_REDUCE;
+            }
+            else
+            {
+                KEY_HANDLE_EVENT = TIME_REDUCE;
+            }
+        }
+        /* in menu */
+        else if (this->page >= PAGE_MENU_SELECT_SHOW_STYLE_CN &&
+                 this->page <= PAGE_MENU_UNSELECT_RETURN_MENU_EN)
+        {
+            KEY_HANDLE_EVENT = MENU_SELECT_ADD;
+        }
+        /* in settings */
+        else if (this->page == PAGE_SETTING_SHOW_STYLE_CN ||
+                 this->page == PAGE_SETTING_SHOW_STYLE_EN)
+        {
+            KEY_HANDLE_EVENT = SETTING_SHOW_STYLE;
+        }
+        else if (this->page == PAGE_SETTING_UNIT_CN ||
+                 this->page == PAGE_SETTING_UNIT_EN)
+        {
+            KEY_HANDLE_EVENT = SETTING_UNIT;
+        }
+        else if (this->page == PAGE_SETTING_CALTEMP_CN ||
+                 this->page == PAGE_SETTING_CALTEMP_EN)
+        {
+            KEY_HANDLE_EVENT = CALTEMP_REDUCE;
+        }
+        else if (this->page == PAGE_SETTING_CN ||
+                 this->page == PAGE_SETTING_EN)
+        {
+            KEY_HANDLE_EVENT = SETTING_LANGUAGE;
+        }
+        else if (this->page == PAGE_SETTING_SPEAKER_CN ||
+                 this->page == PAGE_SETTING_SPEAKER_EN)
+        {
+            KEY_HANDLE_EVENT = SETTING_SPEAKER;
+        }
+        else if (this->page == PAGE_SETTING_UNSELECT_RESET_CN ||
+                 this->page == PAGE_SETTING_UNSELECT_RESET_EN ||
+                 PAGE_SETTING_SELECT_RESET_CN ||
+                 PAGE_SETTING_SELECT_RESET_EN ||
+                 PAGE_SETTING_RESET_DONE_CN ||
+                 PAGE_SETTING_RESET_DONE_EN)
+        {
+            KEY_HANDLE_EVENT = SETTING_RESET;
+        }
+
+        break;
+
+    case KEY_LONG_PRESS_CONTINUE:
+        if (this->page == PAGE_CURVE ||
+                this->page == PAGE_VALUE)
+        {
+            if (this->key_setting_select == SELECT_SETTING_TEMP)
+            {
+                KEY_HANDLE_EVENT = TEMP_REDUCE_FIVE;
+            }
+            else
+            {
+                KEY_HANDLE_EVENT = TIME_REDUCE_FIVE;
+            }
+        }
+        else if (this->page == PAGE_SETTING_CALTEMP_CN ||
+                 this->page == PAGE_SETTING_CALTEMP_EN)
+        {
+            KEY_HANDLE_EVENT = CALTEMP_REDUCE_FIVE;
+        }
+
+        break;
+
+    default:
+        break;
+    }
+
+    /* set key */
+    switch (key_event[4])
+    {
+        
+
+    case KEY_SHORT_PRESS:
+		if (this->hetting_error_state != HEATTING_OK)
+        {
+            this->hetting_error_state = HEATTING_OK;
+            break;
+        }
+        if (this->page == PAGE_CURVE ||
+                this->page == PAGE_VALUE)
+        {
+            KEY_HANDLE_EVENT = SELECT_SETTING;
+        }
+        else if (this->page >= PAGE_MENU_SELECT_SHOW_STYLE_CN &&
+                 this->page <= PAGE_MENU_UNSELECT_SUPPORT_EN)
+        {
+            KEY_HANDLE_EVENT = ENTER_SETS;
+        }
+        else if (this->page == PAGE_MENU_SELECT_RETURN_MENU_CN ||
+                 this->page == PAGE_MENU_SELECT_RETURN_MENU_EN)
+        {
+            KEY_HANDLE_EVENT = EXIT_MENU;
+        }
+        else if (this->page >= PAGE_SETTING_SHOW_STYLE_CN &&
+                 this->page <= PAGE_SETTING_SUPPORT_EN)
+        {
+            if (this->page == PAGE_SETTING_SELECT_RESET_CN ||
+                    this->page == PAGE_SETTING_SELECT_RESET_EN)
+            {
+                KEY_HANDLE_EVENT = SETTING_RESET_DONE;
+            }
+            else
+            {
+                KEY_HANDLE_EVENT = EXIT_SETS;
+            }
+        }
+
+        break;
+
+    case KEY_LONG_PRESS:
+        if (this->page == PAGE_CURVE ||
+                this->page == PAGE_VALUE)
+        {
+            KEY_HANDLE_EVENT = ENTER_MENU;
+        }
+        else
+        {
+            KEY_HANDLE_EVENT = EXIT_MENU;
+        }
+
+        break;
+
+    case KEY_DOUBLE_CLICK:
+        if (this->page == PAGE_CURVE ||
+                this->page == PAGE_VALUE)
+        {
+            KEY_HANDLE_EVENT = QUICK_CHANGE_PAGE;
+        }
+
+        break;
+
+    default:
+        break;
+    }
+}
+
+static void handing_key_event(CZ01_t *this)
+{
+    static int16_t time_count;
+    static bool beep_flag = false;
+    static uint8_t return_main = 0;
+
+    if (this->page == PAGE_CURVE)
+    {
+        return_main = 0;
+    }
+    else if (this->page == PAGE_VALUE)
+    {
+        return_main = 1;
+    }
+
+    switch (KEY_HANDLE_EVENT)
+    {
+    case ENTER_MENU:
+        if (this->function.language == CN)
+        {
+            this->page = PAGE_MENU_SELECT_SHOW_STYLE_CN;
+        }
+        else
+        {
+            this->page = PAGE_MENU_SELECT_SHOW_STYLE_EN;
+        }
+
+        sbeep.cmd = BEEP_LONG;
+        KEY_HANDLE_EVENT = END_EVENT;
+        break;
+
+    case ENTER_SETS:
+        if (this->function.language == CN)
+        {
+            switch (this->menu_select)
+            {
+            case MENU_SELECT_PAGE_MODE:
+                this->page = PAGE_SETTING_SHOW_STYLE_CN;
+                break;
+
+            case MENU_SELECT_UNIT:
+                this->page = PAGE_SETTING_UNIT_CN;
+                break;
+
+            case MENU_SELECT_CAL_TEMP:
+                this->page = PAGE_SETTING_CALTEMP_CN;
+                break;
+
+            case MENU_SELECT_LANGUAGE:
+                this->page = PAGE_SETTING_CN;
+                break;
+
+            case MENU_SELECT_SPEAKER:
+                this->page = PAGE_SETTING_SPEAKER_CN;
+                break;
+
+            case MENU_SELECT_VERSTION:
+                this->page = PAGE_SETTING_VERSTION_CN;
+                break;
+
+            case MENU_SELECT_RESET:
+                this->page = PAGE_SETTING_UNSELECT_RESET_CN;
+                break;
+
+            case MENU_SELECT_SUPPORT:
+                this->page = PAGE_SETTING_SUPPORT_CN;
+                break;
+
+            default:
+                break;
+            }
+        }
+
+        // else if (this->function.language == EN)
+        // {
+        //     switch (this->menu_select)
+        //     {
+        //     case MENU_SELECT_PAGE_MODE:
+        //         this->page = PAGE_SETTING_SHOW_STYLE_EN;
+        //         break;
+        //     case MENU_SELECT_UNIT:
+        //         this->page = PAGE_SETTING_UNIT_EN;
+        //         break;
+        //     case MENU_SELECT_CAL_TEMP:
+        //         this->page = PAGE_SETTING_CALTEMP_EN;
+        //         break;
+        //     case MENU_SELECT_LANGUAGE:
+        //         this->page = PAGE_SETTING_EN;
+        //         break;
+        //     case MENU_SELECT_SPEAKER:
+        //         this->page = PAGE_SETTING_SPEAKER_EN;
+        //         break;
+        //     case MENU_SELECT_VERSTION:
+        //         this->page = PAGE_SETTING_VERSTION_EN;
+        //         break;
+        //     case MENU_SELECT_RESET:
+        //         this->page = PAGE_SETTING_UNSELECT_RESET_EN;
+        //         break;
+        //     case MENU_SELECT_SUPPORT:
+        //         this->page = PAGE_SETTING_SUPPORT_EN;
+        //         break;
+        //     default:
+        //         break;
+        //     }
+        // }
+        sbeep.cmd = BEEP_SHORT;
+        KEY_HANDLE_EVENT = END_EVENT;
+        break;
+
+    case EXIT_SETS:
+        if (this->function.language == CN)
+        {
+            switch (this->menu_select)
+            {
+            case MENU_SELECT_PAGE_MODE:
+                this->page = PAGE_MENU_SELECT_SHOW_STYLE_CN;
+                break;
+
+            case MENU_SELECT_UNIT:
+                this->page = PAGE_MENU_SELECT_UNIT_CN;
+                break;
+
+            case MENU_SELECT_CAL_TEMP:
+                this->page = PAGE_MENU_SELECT_CALTEMP_CN;
+                break;
+
+            case MENU_SELECT_LANGUAGE:
+                this->page = PAGE_MENU_SELECT_LANGUAGE_CN;
+                break;
+
+            case MENU_SELECT_SPEAKER:
+                this->page = PAGE_MENU_SELECT_SPEAKER_CN;
+                break;
+
+            case MENU_SELECT_VERSTION:
+                this->page = PAGE_MENU_SELECT_VERSTION_CN;
+                break;
+
+            case MENU_SELECT_RESET:
+                this->page = PAGE_MENU_SELECT_RESET_CN;
+                break;
+
+            case MENU_SELECT_SUPPORT:
+                this->page = PAGE_MENU_SELECT_SUPPORT_CN;
+                break;
+
+            default:
+                break;
+            }
+        }
+
+        // else if (this->function.language == EN)
+        // {
+        // switch (this->menu_select)
+        //     {
+        //     case MENU_SELECT_PAGE_MODE:
+        //         this->page = PAGE_MENU_SELECT_SHOW_STYLE_EN;
+        //         break;
+        //     case MENU_SELECT_UNIT:
+        //         this->page = PAGE_MENU_SELECT_UNIT_EN;
+        //         break;
+        //     case MENU_SELECT_CAL_TEMP:
+        //         this->page = PAGE_MENU_SELECT_CALTEMP_EN;
+        //         break;
+        //     case MENU_SELECT_LANGUAGE:
+        //         this->page = PAGE_MENU_SELECT_LANGUAGE_EN;
+        //         break;
+        //     case MENU_SELECT_SPEAKER:
+        //         this->page = PAGE_MENU_SELECT_SPEAKER_EN;
+        //         break;
+        //     case MENU_SELECT_VERSTION:
+        //         this->page = PAGE_MENU_SELECT_VERSTION_EN;
+        //         break;
+        //     case MENU_SELECT_RESET:
+        //         this->page = PAGE_MENU_SELECT_RESET_EN;
+        //         break;
+        //     case MENU_SELECT_SUPPORT:
+        //         this->page = PAGE_MENU_SELECT_SUPPORT_EN;
+        //         break;
+        //     default:
+        //         break;
+        //     }
+        // }
+        sbeep.cmd = BEEP_SHORT;
+        KEY_HANDLE_EVENT = END_EVENT;
+        break;
+
+    case MENU_SELECT_ADD:
+        if (this->menu_select == MENU_SELECT_EXIT_MENU)
+        {
+            this->menu_select = MENU_SELECT_PAGE_MODE;
+
+            if (this->function.language == CN)
+            {
+                this->page = PAGE_MENU_SELECT_SHOW_STYLE_CN;
+            }
+            else
+            {
+                this->page = PAGE_MENU_SELECT_SHOW_STYLE_EN;
+            }
+        }
+        else
+        {
+            this->menu_select++;
+            this->page += 4;
+        }
+
+        sbeep.cmd = BEEP_SHORT;
+        KEY_HANDLE_EVENT = END_EVENT;
+        break;
+
+    case MENU_SELECT_REDUCE:
+        if (this->menu_select == MENU_SELECT_PAGE_MODE)
+        {
+            this->menu_select = MENU_SELECT_EXIT_MENU;
+
+            if (this->function.language == CN)
+            {
+                this->page = PAGE_MENU_SELECT_RETURN_MENU_CN;
+            }
+            else
+            {
+                this->page = PAGE_MENU_SELECT_RETURN_MENU_EN;
+            }
+        }
+        else
+        {
+            this->menu_select--;
+            this->page -= 4;
+        }
+
+        sbeep.cmd = BEEP_SHORT;
+        KEY_HANDLE_EVENT = END_EVENT;
+        break;
+
+    case EXIT_MENU:
+        if (return_main)
+        {
+            this->page = PAGE_VALUE;
+        }
+        else
+        {
+            this->page = PAGE_CURVE;
+        }
+
+        this->menu_select = MENU_SELECT_PAGE_MODE;
+        sbeep.cmd = BEEP_SHORT;
+        KEY_HANDLE_EVENT = END_EVENT;
+        break;
+
+    case QUICK_CHANGE_PAGE:
+        if (this->page == PAGE_CURVE)
+        {
+            this->page = PAGE_VALUE;
+            this->function.show = SHOW_VALUE;
+        }
+        else if (this->page == PAGE_VALUE)
+        {
+            this->page = PAGE_CURVE;
+            this->function.show = SHOW_CURVE;
+        }
+
+        sbeep.cmd = BEEP_SHORT;
+        KEY_HANDLE_EVENT = END_EVENT;
+        break;
+
+    case TEMP_ADD:
+        if (this->function.unit == CELSIUS)
+        {
+            if (++this->set_temp_c >= MAX_SET_TEMP_C)
+            {
+                this->set_temp_c = MAX_SET_TEMP_C;
+            }
+
+            this->set_temp_f = 9 * this->set_temp_c / 5 + 32;
+        }
+        else if (this->function.unit == FAHRENHEIT)
+        {
+            if (++this->set_temp_f >= MAX_SET_TEMP_F)
+            {
+                this->set_temp_f = MAX_SET_TEMP_F;
+            }
+
+            this->set_temp_c = (this->set_temp_f - 32) * 5 / 9;
+        }
+
+        this->setting_temp_flag = true;
+        this->setting_temp_time = 0;
+        sbeep.cmd = BEEP_SHORT;
+        KEY_HANDLE_EVENT = END_EVENT;
+        break;
+
+    case TEMP_ADD_FIVE:
+        if (this->function.unit == CELSIUS)
+        {
+            if (this->set_temp_c + 5 >= MAX_SET_TEMP_C)
+            {
+                this->set_temp_c = MAX_SET_TEMP_C;
+            }
+            else
+            {
+                this->set_temp_c += 5;
+            }
+
+            this->set_temp_f = 9 * this->set_temp_c / 5 + 32;
+        }
+        else if (this->function.unit == FAHRENHEIT)
+        {
+            if (this->set_temp_f + 41 >= MAX_SET_TEMP_F)
+            {
+                this->set_temp_f = MAX_SET_TEMP_F;
+            }
+            else
+            {
+                this->set_temp_f += 41;
+            }
+
+            this->set_temp_c = (this->set_temp_f - 32) * 5 / 9;
+        }
+
+        this->setting_temp_flag = true;
+        this->setting_temp_time = 0;
+        sbeep.cmd = BEEP_SHORT;
+        KEY_HANDLE_EVENT = END_EVENT;
+        break;
+
+    case TEMP_REDUCE:
+        if (this->function.unit == CELSIUS)
+        {
+            if (--this->set_temp_c <= MIN_SET_TEMP_C)
+            {
+                this->set_temp_c = MIN_SET_TEMP_C;
+            }
+
+            this->set_temp_f = 9 * this->set_temp_c / 5 + 32;
+        }
+        else if (this->function.unit == FAHRENHEIT)
+        {
+            if (--this->set_temp_f <= MIN_SET_TEMP_F)
+            {
+                this->set_temp_f = MIN_SET_TEMP_F;
+            }
+
+            this->set_temp_c = (this->set_temp_f - 32) * 5 / 9;
+        }
+
+        this->setting_temp_flag = true;
+        this->setting_temp_time = 0;
+        sbeep.cmd = BEEP_SHORT;
+        KEY_HANDLE_EVENT = END_EVENT;
+        break;
+
+    case TEMP_REDUCE_FIVE:
+        if (this->function.unit == CELSIUS)
+        {
+            if (this->set_temp_c - 5 <= MIN_SET_TEMP_C)
+            {
+                this->set_temp_c = MIN_SET_TEMP_C;
+            }
+            else
+            {
+                this->set_temp_c -= 5;
+            }
+
+            this->set_temp_f = 9 * this->set_temp_c / 5 + 32;
+        }
+        else if (this->function.unit == FAHRENHEIT)
+        {
+            if (this->set_temp_f - 41 <= MIN_SET_TEMP_F)
+            {
+                this->set_temp_f = MIN_SET_TEMP_F;
+            }
+            else
+            {
+                this->set_temp_f -= 41;
+            }
+
+            this->set_temp_c = (this->set_temp_f - 32) * 5 / 9;
+        }
+
+        this->setting_temp_flag = true;
+        this->setting_temp_time = 0;
+        sbeep.cmd = BEEP_SHORT;
+        KEY_HANDLE_EVENT = END_EVENT;
+        break;
+
+    case TIME_ADD:
+        if (++this->set_time >= MAX_SET_TIME)
+        {
+            this->set_time = MAX_SET_TIME;
+        }
+
+        this->countdown_time = this->set_time;
+        this->setting_time_flag = true;
+        this->setting_time_time = 0;
+        sbeep.cmd = BEEP_SHORT;
+        KEY_HANDLE_EVENT = END_EVENT;
+        break;
+
+    case TIME_ADD_FIVE:
+        if (this->set_time + 5 >= MAX_SET_TIME)
+        {
+            this->set_time = MAX_SET_TIME;
+        }
+        else
+        {
+            this->set_time += 5;
+        }
+
+        this->countdown_time = this->set_time;
+        this->setting_time_flag = true;
+        this->setting_time_time = 0;
+        sbeep.cmd = BEEP_SHORT;
+        KEY_HANDLE_EVENT = END_EVENT;
+        break;
+
+    case TIME_REDUCE:
+        if (--this->set_time <= MIN_SET_TIME)
+        {
+            this->set_time = MIN_SET_TIME;
+        }
+
+        this->countdown_time = this->set_time;
+        this->setting_time_flag = true;
+        this->setting_time_time = 0;
+        sbeep.cmd = BEEP_SHORT;
+        KEY_HANDLE_EVENT = END_EVENT;
+        break;
+
+    case TIME_REDUCE_FIVE:
+        if (this->set_time - 5 <= MIN_SET_TIME)
+        {
+            this->set_time = MIN_SET_TIME;
+        }
+        else
+        {
+            this->set_time -= 5;
+        }
+
+        this->countdown_time = this->set_time;
+        this->setting_time_flag = true;
+        this->setting_time_time = 0;
+        sbeep.cmd = BEEP_SHORT;
+        KEY_HANDLE_EVENT = END_EVENT;
+        break;
+
+    case SELECT_SETTING:
+        this->key_setting_select = !this->key_setting_select;
+        this->setting_temp_flag = false;
+        this->setting_time_flag = false;
+        sbeep.cmd = BEEP_SHORT;
+        KEY_HANDLE_EVENT = END_EVENT;
+        break;
+
+    case SELECT_CHANNEL:
+        if (++this->function.channel > SELECT_CHANNEL_3)
+        {
+            this->function.channel = SELECT_CHANNEL_1;
+        }
+
+        if (this->function.unit == CELSIUS)
+        {
+            switch (this->function.channel)
+            {
+            case SELECT_CHANNEL_1:
+                this->set_temp_c = this->ch1_set_temp_c;
+                break;
+
+            case SELECT_CHANNEL_2:
+                this->set_temp_c = this->ch2_set_temp_c;
+                break;
+
+            case SELECT_CHANNEL_3:
+                this->set_temp_c = this->ch3_set_temp_c;
+                break;
+
+            default:
+                break;
+            }
+
+            this->set_temp_f = 9 * this->set_temp_c / 5 + 32;
+        }
+        else
+        {
+            switch (this->function.channel)
+            {
+            case SELECT_CHANNEL_1:
+                this->set_temp_f = this->ch1_set_temp_f;
+                break;
+
+            case SELECT_CHANNEL_2:
+                this->set_temp_f = this->ch2_set_temp_f;
+                break;
+
+            case SELECT_CHANNEL_3:
+                this->set_temp_f = this->ch3_set_temp_f;
+                break;
+
+            default:
+                break;
+            }
+
+            this->set_temp_c = (this->set_temp_f - 32) * 5 / 9;
+        }
+
+        this->setting_temp_flag = false;
+        this->setting_time_flag = false;
+        sbeep.cmd = BEEP_SHORT;
+        KEY_HANDLE_EVENT = END_EVENT;
+        break;
+
+    case SAVE_CHANNEL:
+        if (this->function.unit == CELSIUS)
+        {
+            switch (this->function.channel)
+            {
+            case SELECT_NONE:
+                this->ch1_set_temp_c = this->set_temp_c;
+                this->ch1_set_temp_f = 9 * this->ch1_set_temp_c / 5 + 32;
+                this->function.channel = SELECT_CHANNEL_1;
+                break;
+
+            case SELECT_CHANNEL_1:
+                this->ch1_set_temp_c = this->set_temp_c;
+                this->ch1_set_temp_f = 9 * this->ch1_set_temp_c / 5 + 32;
+                break;
+
+            case SELECT_CHANNEL_2:
+                this->ch2_set_temp_c = this->set_temp_c;
+                this->ch2_set_temp_f = 9 * this->ch2_set_temp_c / 5 + 32;
+                break;
+
+            case SELECT_CHANNEL_3:
+                this->ch3_set_temp_c = this->set_temp_c;
+                this->ch3_set_temp_f = 9 * this->ch3_set_temp_c / 5 + 32;
+                break;
+
+            default:
+                break;
+            }
+        }
+        else
+        {
+            switch (this->function.channel)
+            {
+            case SELECT_NONE:
+                this->ch1_set_temp_f = this->set_temp_f;
+                this->ch1_set_temp_c = (this->ch1_set_temp_f - 32) * 5 / 9;
+                this->function.channel = SELECT_CHANNEL_1;
+                break;
+
+            case SELECT_CHANNEL_1:
+                this->ch1_set_temp_f = this->set_temp_f;
+                this->ch1_set_temp_c = (this->ch1_set_temp_f - 32) * 5 / 9;
+                break;
+
+            case SELECT_CHANNEL_2:
+                this->ch2_set_temp_f = this->set_temp_f;
+                this->ch2_set_temp_c = (this->ch2_set_temp_f - 32) * 5 / 9;
+                break;
+
+            case SELECT_CHANNEL_3:
+                this->ch3_set_temp_f = this->set_temp_f;
+                this->ch3_set_temp_c = (this->ch3_set_temp_f - 32) * 5 / 9;
+                break;
+
+            default:
+                break;
+            }
+        }
+
+        this->last_function.channel = 0xff;
+        this->setting_temp_flag = false;
+        this->setting_time_flag = false;
+        sbeep.cmd = BEEP_LONG;
+        KEY_HANDLE_EVENT = END_EVENT;
+        break;
+
+    case SELECT_HEATTING:
+        this->function.heat = !this->function.heat;
+        this->setting_temp_flag = false;
+        this->setting_time_flag = false;
+        sbeep.cmd = BEEP_SHORT;
+        KEY_HANDLE_EVENT = END_EVENT;
+        break;
+
+    case SETTING_SHOW_STYLE:
+        if (this->function.show == SHOW_CURVE)
+        {
+            this->function.show = SHOW_VALUE;
+            return_main = 1;
+        }
+        else if (this->function.show == SHOW_VALUE)
+        {
+            this->function.show = SHOW_CURVE;
+            return_main = 0;
+        }
+
+        sbeep.cmd = BEEP_SHORT;
+        KEY_HANDLE_EVENT = END_EVENT;
+        break;
+
+    case SETTING_UNIT:
+        this->function.unit = !this->function.unit;
+        sbeep.cmd = BEEP_SHORT;
+        KEY_HANDLE_EVENT = END_EVENT;
+        break;
+
+    case CALTEMP_ADD:
+        if (this->function.unit == CELSIUS)
+        {
+            if (this->show_cal_temp_c + 1 >=
+                    this->set_temp_c + 100)
+            {
+                this->show_cal_temp_c = this->set_temp_c + 100;
+            }
+            else
+            {
+                this->show_cal_temp_c++;
+            }
+        }
+        else if (this->function.unit == FAHRENHEIT)
+        {
+            if (this->show_cal_temp_f + 1 >=
+                    this->set_temp_f + 212)
+            {
+                this->show_cal_temp_f = this->set_temp_f + 212;
+            }
+            else
+            {
+                this->show_cal_temp_f++;
+            }
+        }
+
+        sbeep.cmd = BEEP_SHORT;
+        KEY_HANDLE_EVENT = END_EVENT;
+        break;
+
+    case CALTEMP_ADD_FIVE:
+        if (this->function.unit == CELSIUS)
+        {
+            if (this->show_cal_temp_c + 5 >=
+                    this->set_temp_c + 100)
+            {
+                this->show_cal_temp_c = this->set_temp_c + 100;
+            }
+            else
+            {
+                this->show_cal_temp_c += 5;
+            }
+        }
+        else if (this->function.unit == FAHRENHEIT)
+        {
+            if (this->show_cal_temp_f + 9 >=
+                    this->set_temp_f + 212)
+            {
+                this->show_cal_temp_f = this->set_temp_f + 212;
+            }
+            else
+            {
+                this->show_cal_temp_f += 9;
+            }
+        }
+
+        sbeep.cmd = BEEP_SHORT;
+        KEY_HANDLE_EVENT = END_EVENT;
+        break;
+
+    case CALTEMP_REDUCE:
+        if (this->function.unit == CELSIUS)
+        {
+            if (this->show_cal_temp_c - 1 <=
+                    this->set_temp_c - 100)
+            {
+                this->show_cal_temp_c = this->set_temp_c - 100;
+            }
+            else
+            {
+                this->show_cal_temp_c--;
+            }
+        }
+        else if (this->function.unit == FAHRENHEIT)
+        {
+            if (this->show_cal_temp_f - 1 <=
+                    this->set_temp_f - 212)
+            {
+                this->show_cal_temp_f = this->set_temp_f - 212;
+            }
+            else
+            {
+                this->show_cal_temp_f--;
+            }
+        }
+
+        sbeep.cmd = BEEP_SHORT;
+        KEY_HANDLE_EVENT = END_EVENT;
+        break;
+
+    case CALTEMP_REDUCE_FIVE:
+        if (this->function.unit == CELSIUS)
+        {
+            if (this->show_cal_temp_c - 5 <=
+                    this->set_temp_c - 100)
+            {
+                this->show_cal_temp_c = this->set_temp_c - 100;
+            }
+            else
+            {
+                this->show_cal_temp_c -= 5;
+            }
+        }
+        else if (this->function.unit == FAHRENHEIT)
+        {
+            if (this->show_cal_temp_f - 9 <=
+                    this->set_temp_f - 212)
+            {
+                this->show_cal_temp_f = this->set_temp_f - 212;
+            }
+            else
+            {
+                this->show_cal_temp_f -= 9;
+            }
+        }
+
+        sbeep.cmd = BEEP_SHORT;
+        KEY_HANDLE_EVENT = END_EVENT;
+        break;
+
+    case SETTING_LANGUAGE:
+        this->function.language = !this->function.language;
+
+        if (this->function.language == CN)
+        {
+            this->page = PAGE_SETTING_CN;
+        }
+        else if (this->function.language == EN)
+        {
+            this->page = PAGE_SETTING_EN;
+        }
+
+        sbeep.cmd = BEEP_SHORT;
+        KEY_HANDLE_EVENT = END_EVENT;
+        break;
+
+    case SETTING_SPEAKER:
+        this->function.speaker = !this->function.speaker;
+        sbeep.cmd = BEEP_SHORT;
+        KEY_HANDLE_EVENT = END_EVENT;
+        break;
+
+    case SETTING_RESET:
+        if (this->page == PAGE_SETTING_UNSELECT_RESET_CN)
+        {
+            this->page = PAGE_SETTING_SELECT_RESET_CN;
+        }
+        else if (this->page == PAGE_SETTING_UNSELECT_RESET_EN)
+        {
+            this->page = PAGE_SETTING_SELECT_RESET_EN;
+        }
+        else if (this->page == PAGE_SETTING_SELECT_RESET_CN)
+        {
+            this->page = PAGE_SETTING_UNSELECT_RESET_CN;
+        }
+        else if (this->page == PAGE_SETTING_SELECT_RESET_EN)
+        {
+            this->page = PAGE_SETTING_UNSELECT_RESET_EN;
+        }
+
+        sbeep.cmd = BEEP_SHORT;
+        KEY_HANDLE_EVENT = END_EVENT;
+        break;
+
+    case SETTING_RESET_DONE:
+        this->reset_flag = true;
+        this->set_temp_c = DEFAULT_SET_TEMP;
+        this->cal_temp = DEFAULT_CAL_TEMP;
+        this->set_time = DEFAULT_SET_TIME;
+        this->ch1_set_temp_c = DEFAULT_CH1_SET_TEMP;
+        this->ch2_set_temp_c = DEFAULT_CH2_SET_TEMP;
+        this->ch3_set_temp_c = DEFAULT_CH3_SET_TEMP;
+        this->function.show = SHOW_CURVE;
+        this->function.language = CN;
+        this->function.unit = CELSIUS;
+        this->function.speaker = ON;
+        sbeep.cmd = BEEP_SHORT;
+        KEY_HANDLE_EVENT = END_EVENT;
+        break;
+
+    case END_EVENT:
+        break;
+
+    default:
+        break;
+    }
+
+    if (this->setting_temp_flag)
+    {
+        if (++this->setting_temp_time >= SETTING_TEMP_TIME)
+        {
+            this->setting_temp_flag = false;
+            this->setting_temp_time = 0;
+        }
+    }
+    else
+    {
+        this->setting_temp_time = 0;
+    }
+
+    if (this->setting_time_flag)
+    {
+        if (++this->setting_time_time >= SETTING_TIME_TIME)
+        {
+            this->setting_time_flag = false;
+            this->setting_time_time = 0;
+        }
+    }
+    else
+    {
+        this->setting_time_time = 0;
+    }
+
+    if (this->function.heat == HEATTING_START &&
+            this->countdown_time &&
+            //! this->setting_temp_flag &&
+            !this->setting_time_flag)
+    {
+        time_count++;
+        beep_flag = true;
+
+        if (time_count >= 50)
+        {
+            if (this->countdown_time <= 0)
+            {
+                this->countdown_time = 0;
+            }
+            else
+            {
+                this->countdown_time--;
+            }
+
+            time_count = 0;
+        }
+    }
+    else
+    {
+        time_count = 0;
+    }
+
+    if (this->countdown_time == 0 && beep_flag)
+    {
+        sbeep.cmd = BEEP_LONG;
+        beep_flag = false;
+    }
+}
+
+void input_handle(CZ01_t *this)
+{
+    handing_key_event(this);
+    get_key_events(this);
+}

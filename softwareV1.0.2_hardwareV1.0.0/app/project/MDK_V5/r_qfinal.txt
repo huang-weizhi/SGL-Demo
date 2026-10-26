@@ -1,0 +1,11 @@
+﻿probe lines left: 0
+/* capacity limits (RAM = 2 buffers * UI_WAVE_BLOCK_W * WAVE_MAX_H * 2 bytes) */
+#define WAVE_MAX_H          192U    /* max area height in pixels */
+#define UI_WAVE_BLOCK_W     4U      /* pixels per block (smaller = less RAM,
+#define WAVE_MAX_BLOCK_PX   (UI_WAVE_BLOCK_W * WAVE_MAX_H)  /* pixels in one block */
+#define WAVE_USE_LIVE_MAPPING   1
+/* lookup table resolution, only used when WAVE_USE_LIVE_MAPPING == 0.
+armclang: warning: '--target=armv7em-arm-none-eabi' is not supported. Supported values for this option are 'arm-arm-none-eabi' or 'aarch64-arm-none-eabi' [-Wunsupported-option]
+Program Size: Code=30832 RO-data=1000 RW-data=132 ZI-data=26388
+".\objects\AT32F415CBT7_WorkBench.axf" - 0 Error(s), 1 Warning(s).
+exit 1

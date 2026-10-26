@@ -1,0 +1,88 @@
+﻿pc_handle.c:19: #if !PC_FLASH_SIMPLE_ENABLE
+pc_handle.c:28: pc->tx_buff[2] = 0x02;
+pc_handle.c:29: pc->tx_buff[8] = 0x1D;
+pc_handle.c:33: pc->tx_buff[2] = 0x03;
+pc_handle.c:34: pc->tx_buff[8] = 0x18;
+pc_handle.c:37: pc->tx_buff[0] = PC_HEAD_1;
+pc_handle.c:38: pc->tx_buff[1] = 0x03;
+pc_handle.c:39: pc->tx_buff[3] = LOCAL_DEVICE_ID_2;
+pc_handle.c:40: pc->tx_buff[4] = LOCAL_DEVICE_ID_1;
+pc_handle.c:41: pc->tx_buff[5] = 0x00;
+pc_handle.c:42: pc->tx_buff[6] = 0x0A;
+pc_handle.c:43: pc->tx_buff[7] = 0x1D;
+pc_handle.c:44: pc->tx_buff[9] = 0x00;
+pc_handle.c:45: pc->tx_buff[10] = 0x00;
+pc_handle.c:46: pc->tx_buff[11] = 0x00;
+pc_handle.c:47: pc->tx_buff[12] = 0x00;
+pc_handle.c:48: pc->tx_buff[13] = 0x00;
+pc_handle.c:49: pc->tx_buff[14] = 0x00;
+pc_handle.c:50: pc->tx_buff[15] = 0x00;
+pc_handle.c:51: pc->tx_buff[16] = 0x00;
+pc_handle.c:56: pc->tx_buff[17] = (crc_value >> 24) & 0xff;
+pc_handle.c:57: pc->tx_buff[18] = (crc_value >> 16) & 0xff;
+pc_handle.c:58: pc->tx_buff[19] = (crc_value >> 8) & 0xff;
+pc_handle.c:59: pc->tx_buff[20] = crc_value & 0xff;
+pc_handle.c:60: pc->tx_buff[21] = PC_HEAD_2;
+pc_handle.c:67: pc->tx_buff[PC_HEAD1] = PC_HEAD_1;
+pc_handle.c:68: pc->tx_buff[PC_CMD1] = 0x01;
+pc_handle.c:69: pc->tx_buff[PC_CMD2] = 0x01;
+pc_handle.c:70: pc->tx_buff[PC_ID_H] = LOCAL_DEVICE_ID_2;
+pc_handle.c:71: pc->tx_buff[PC_ID_L] = LOCAL_DEVICE_ID_1;
+pc_handle.c:72: pc->tx_buff[PC_DATA_LEN_H] = 0x00;
+pc_handle.c:73: pc->tx_buff[PC_DATA_LEN_L] = 0x0A;
+pc_handle.c:74: pc->tx_buff[PC_DATA1_LEN_H] = this->sw_ver_major;
+pc_handle.c:75: pc->tx_buff[PC_DATA1_LEN_L] = this->sw_ver_minor;
+pc_handle.c:76: pc->tx_buff[PC_DATA2_LEN_H] = this->sw_ver_patch;
+pc_handle.c:77: pc->tx_buff[PC_DATA2_LEN_L] = this->hw_ver_major;
+pc_handle.c:78: pc->tx_buff[PC_DATA3_LEN_H] = this->hw_ver_minor;
+pc_handle.c:79: pc->tx_buff[PC_DATA3_LEN_L] = this->hw_ver_patch;
+pc_handle.c:80: pc->tx_buff[PC_DATA4_LEN_H] = ((this->uid_value >> 24) & 0xff);
+pc_handle.c:81: pc->tx_buff[PC_DATA4_LEN_L] = ((this->uid_value >> 16) & 0xff);
+pc_handle.c:82: pc->tx_buff[PC_DATA5_LEN_H] = ((this->uid_value >> 8) & 0xff);
+pc_handle.c:83: pc->tx_buff[PC_DATA5_LEN_L] = (this->uid_value & 0xff);
+pc_handle.c:88: pc->tx_buff[PC_CRC32_1] = ((crc_value >> 24) & 0xff);
+pc_handle.c:89: pc->tx_buff[PC_CRC32_2] = ((crc_value >> 16) & 0xff);
+pc_handle.c:90: pc->tx_buff[PC_CRC32_3] = ((crc_value >> 8) & 0xff);
+pc_handle.c:91: pc->tx_buff[PC_CRC32_4] = (crc_value & 0xff);
+pc_handle.c:92: pc->tx_buff[PC_HEAD2] = PC_HEAD_2;
+pc_handle.c:112: if (PC_CHECK_HEAD(pc->rx_buff[PC_HEAD1], pc->rx_buff[PC_HEAD2]))
+pc_handle.c:119: if (pc->rx_buff[PC_CRC32_1] == ((crc_value >> 24) & 0xff) &&
+pc_handle.c:120: pc->rx_buff[PC_CRC32_2] == ((crc_value >> 16) & 0xff) &&
+pc_handle.c:121: pc->rx_buff[PC_CRC32_3] == ((crc_value >> 8) & 0xff) &&
+pc_handle.c:122: pc->rx_buff[PC_CRC32_4] == (crc_value & 0xff))
+pc_handle.c:125: if (pc->rx_buff[PC_CMD1] == 0x01 && pc->rx_buff[PC_CMD2] == 0x01 && pc->rx_buff[PC_ID_L] == 0x00)
+pc_handle.c:130: else if (pc->rx_buff[PC_CMD1] == PC_FIRMWARE_UPDATE && pc->rx_buff[PC_CMD2] == PC_FIRMWARE_UPDATE_CONNECT
+pc_handle.c:131: && pc->rx_buff[PC_ID_L] == 0x00)
+pc_handle.c:135: else if (pc->rx_buff[PC_CMD1] == PC_UI_UPDATE && pc->rx_buff[PC_CMD2] == PC_FIRMWARE_UPDATE_CONNECT
+pc_handle.c:136: && pc->rx_buff[PC_ID_L] == 0x00)
+pc_handle.c:191: pc->rx_buff[got] = b;
+pc_handle.c:199: if (PC_CHECK_HEAD(pc->rx_buff[PC_HEAD1], pc->rx_buff[1035]))
+pc_handle.c:206: if (pc->rx_buff[1031] == ((crc_value >> 24) & 0xff) &&
+pc_handle.c:207: pc->rx_buff[1032] == ((crc_value >> 16) & 0xff) &&
+pc_handle.c:208: pc->rx_buff[1033] == ((crc_value >> 8)  & 0xff) &&
+pc_handle.c:209: pc->rx_buff[1034] == (crc_value & 0xff))
+pc_handle.c:211: spiflash_write(&pc_data.rx_buff[UPDATE_DATA_OFFSET],
+pc_handle.c:216: if (pc->rx_buff[2] == 0x04)
+pc_handle.c:270: #endif /* !PC_FLASH_SIMPLE_ENABLE */
+pc_handle.c:272: #if (PC_FLASH_SIMPLE_ENABLE && !PC_LOOPBACK_TEST)
+pc_handle.c:361: #endif /* PC_FLASH_SIMPLE_ENABLE */
+pc_handle.c:363: #if PC_LOOPBACK_TEST
+pc_handle.c:372: #define LB_BUF_SIZE   3072    /* >= largest expected packet (test file ~2960 B) */
+pc_handle.c:378: static uint8_t    lb_buf[LB_BUF_SIZE];
+pc_handle.c:411: while (uart_rx_available() && lb_len < LB_BUF_SIZE)
+pc_handle.c:413: lb_buf[lb_len++] = uart_read_byte();
+pc_handle.c:420: uart_send_blocking(lb_buf, lb_len);
+pc_handle.c:427: #endif /* PC_LOOPBACK_TEST */
+pc_handle.c:431: #if PC_LOOPBACK_TEST
+pc_handle.c:433: #elif PC_FLASH_SIMPLE_ENABLE
+pc_handle.h:23: #ifndef PC_FLASH_SIMPLE_ENABLE
+pc_handle.h:24: #define PC_FLASH_SIMPLE_ENABLE 1
+pc_handle.h:31: #ifndef PC_LOOPBACK_TEST
+pc_handle.h:32: #define PC_LOOPBACK_TEST 0
+pc_handle.h:115: uint8_t rx_buff[PC_RX_BUFF_SIZE];
+pc_handle.h:117: uint8_t tx_buff[PC_TX_BUFF_SIZE];
+pc_handle.h:118: uint32_t check_crc_buff[PC_CRC_BUFF_SIZE];
+Inf_uart.h:26: #define UART_USE_TASK_NOTIFY   0
+Inf_uart.h:35: #define UART_RX_DMA_SIZE    512U    /* DMA circular buffer, must be a power of 2 */
+Inf_uart.h:36: #define UART_RX_RING_SIZE   4096U   /* RX ring, >= 2x largest frame */
+Inf_uart.h:37: #define UART_TX_RING_SIZE   512U    /* TX queue, >= 2x largest send chunk */

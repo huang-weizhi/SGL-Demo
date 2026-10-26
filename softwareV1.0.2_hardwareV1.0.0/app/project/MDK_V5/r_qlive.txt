@@ -1,0 +1,7 @@
+﻿#define WAVE_MAX_H          192U    /* max area height in pixels */
+#define WAVE_USE_LIVE_MAPPING   1
+.\objects\AT32F415CBT7_WorkBench.axf: Error: L6406E: No space in execution regions with .ANY selector matching lto-llvm-284e20.o(.bss.timer_task_tcb).
+.\objects\AT32F415CBT7_WorkBench.axf: Error: L6406E: No space in execution regions with .ANY selector matching lto-llvm-284e20.o(.bss.prvCheckForValidListAndQueue.xStaticTimerQueue).
+.\objects\AT32F415CBT7_WorkBench.axf: Error: L6406E: No space in execution regions with .ANY selector matching lto-llvm-284e20.o(.bss.xQueueRegistry).
+.\objects\AT32F415CBT7_WorkBench.axf: Error: L6406E: No space in execution regions with .ANY selector matching lto-llvm-284e20.o(.bss.scz01).
+exit 2

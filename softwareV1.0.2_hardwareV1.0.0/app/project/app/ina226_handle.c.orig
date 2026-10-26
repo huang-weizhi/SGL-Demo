@@ -1,0 +1,63 @@
+#include "ina226_handle.h"
+#include "at32f403a_407_wk_config.h"
+#include "PS3006.h"
+
+/* INA226 主处理函数 */
+void ina226_handle(void)
+{
+#if 1
+    static uint8_t state = 0;
+    static uint16_t reset_time = 0;
+    volatile static float last_input_current = 0;
+
+        /* 读取电流 */
+        last_input_current = sps3006.output_current;
+        ina226.Current = INA226_GetCurrent();
+
+        /* 零点漂移校正 - 使用条件判断替代fabsf */
+        if (ina226.Current == 0.25f || ina226.Current == -0.25f)
+        {
+            reset_time = 0;
+            ina226.Current = 0;
+        }
+		if(ina226.Current<0.0f)
+		{
+		    reset_time = 0;
+            ina226.Current = 0;
+		}
+
+        sps3006.output_current = ina226.Current;
+
+        /* 检查是否需要复位 */
+        if (last_input_current == sps3006.output_current)
+        {
+            reset_time++;
+        }
+        else
+        {
+            reset_time = 0;
+        }
+
+        if (reset_time >= 200)  /* 连续200次相同才复位 */
+        {
+            reset_time = 0;
+            INA226_Reset();
+        }
+
+         
+		#if 0
+        /* 发送到队列 */
+        if (xQueueSend(ina226_value_handle, &ina226, 0) == pdPASS)
+        {
+            /* 发送成功 */
+             printf("send ok\r\n");
+        }
+        else
+        {
+             printf("send error\r\n");
+        }
+		#endif
+ 
+
+#endif
+}

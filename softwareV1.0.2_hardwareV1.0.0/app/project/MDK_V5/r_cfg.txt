@@ -1,0 +1,10 @@
+﻿header now:
+#define WAVE_MAX_H          192U    /* max area height in pixels */
+#define UI_WAVE_BLOCK_W     4U      /* pixels per block (smaller = less RAM,
+#define WAVE_USE_LIVE_MAPPING   1
+#define WAVE_LUT_ENTRIES    256U
+dup ui_wave files:
+D:\Work Area\Code For WorkBench\FW_CZ01\softwareV1.0.0_hardwareV1.0.0\app\project\MDK_V5\objects\ui_wave.d
+D:\Work Area\Code For WorkBench\FW_CZ01\softwareV1.0.0_hardwareV1.0.0\app\project\MDK_V5\objects\ui_wave.o
+D:\Work Area\Code For WorkBench\FW_CZ01\softwareV1.0.0_hardwareV1.0.0\app\project\ui_base\ui_wave.c
+D:\Work Area\Code For WorkBench\FW_CZ01\softwareV1.0.0_hardwareV1.0.0\app\project\ui_base\ui_wave.h

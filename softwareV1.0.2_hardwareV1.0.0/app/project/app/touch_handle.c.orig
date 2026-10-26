@@ -1,0 +1,109 @@
+#include "touch_handle.h"
+#include "beep_handle.h"
+void touch_event_handle(PS3006_Global_t *this);
+void get_touch_event(void);
+
+static touch_event_e touch_event = TOUCH_EVENT_NONE;
+
+void touch_handle(void)
+{
+    /* get event */
+    get_touch_event();
+    /* handle event */
+    touch_event_handle(&sps3006);
+}
+
+void get_touch_event(void)
+{
+    gesture_t g = cst340_read_gesture();
+
+    switch (g)
+    {
+    case GESTURE_SHORT_PRESS:
+        printf("Short press\n");
+        break;
+
+    case GESTURE_LONG_PRESS:
+        printf("Long press\n");
+        break;
+
+    case GESTURE_DOUBLE_CLICK:
+        printf("Double click\n");
+        break;
+
+    case GESTURE_SWIPE_LEFT:
+        touch_event = TOUCH_ADD_PAGE;
+        printf("Swipe left\n");
+        break;
+
+    case GESTURE_SWIPE_RIGHT:
+
+        touch_event = TOUCH_REDUCE_PAGE;
+        printf("Swipe right\n");
+        break;
+
+    case GESTURE_SWIPE_UP:
+        printf("Swipe up\n");
+        break;
+
+    case GESTURE_SWIPE_DOWN:
+        printf("Swipe down\n");
+        break;
+
+    default:
+        break;
+    }
+
+    /* get page */
+    switch (sps3006.page)
+    {
+    case PAGE_LOGO:
+        break;
+
+    case PAGE_CURVE:
+        break;
+
+    case PAGE_VALUE:
+        break;
+
+    case PAGE_CHARGE:
+        break;
+
+    case PAGE_SETTING:
+        break;
+
+    default:
+        break;
+    }
+}
+
+void touch_event_handle(PS3006_Global_t *this)
+{
+    switch (touch_event)
+    {
+
+    case TOUCH_ADD_PAGE:
+        sbeep.cmd = BEEP_SHORT;
+        if (++this->page > PAGE_SETTING)
+        {
+            this->page = PAGE_CURVE;
+        }
+		touch_event = TOUCH_EVENT_NONE;
+        break;
+    case TOUCH_REDUCE_PAGE:
+        sbeep.cmd = BEEP_SHORT;
+        if (--this->page < PAGE_CURVE)
+        {
+            this->page = PAGE_SETTING;
+        }
+		touch_event = TOUCH_EVENT_NONE;
+        break;
+
+    case TOUCH_EVENT_NONE:
+         
+        break;
+
+    default:
+        break;
+    }
+}

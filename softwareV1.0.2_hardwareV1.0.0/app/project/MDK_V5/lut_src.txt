@@ -1,0 +1,1 @@
+﻿--- WAVE_USE_LIVE_MAPPING occurrences in .c ---

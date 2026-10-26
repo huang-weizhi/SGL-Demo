@@ -1,0 +1,16 @@
+*** Using Compiler 'V6.22', folder: 'D:\Work Program\Keil_v5\ARM\ARMCLANG\Bin'
+Build target 'AT32F415CBT7_WorkBench'
+compiling Inf_lcd.c...
+linking...
+Program Size: Code=35764 RO-data=35584 RW-data=132 ZI-data=24484  
+FromELF: creating hex file...
+After Build - User command #1: .\keil5_disp_size_bar.exe
+ram:
+  RW_IRAM1 :0x20000000
+   32.00 KB :|¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö_____|   75.12 % (   24.04 KB /    32.00 KB) [8152 B]
+flash:
+  ER_IROM1 :0x8004000
+  128.00 KB :|¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö__________|   54.43 % (   69.68 KB /   128.00 KB) [59724 B]
+After Build - User command #2: fromelf.exe --bin --output .\Listings\AT32F415CBT7_WorkBench.bin .\objects\AT32F415CBT7_WorkBench.axf
+".\objects\AT32F415CBT7_WorkBench.axf" - 0 Error(s), 0 Warning(s).
+Build Time Elapsed:  00:00:01

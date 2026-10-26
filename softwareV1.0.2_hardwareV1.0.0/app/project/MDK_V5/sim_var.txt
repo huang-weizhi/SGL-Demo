@@ -1,0 +1,53 @@
+﻿==== new  set=240  k=0.8  C=400  Pmax=300  tau_sensor=15 ====
+max sensor temp = 236.5 degC at 15.3 min   (overshoot -3.5 degC)
+final temp = 236.5 degC,  final duty = 55 %,  i_term = 200
+
+t_min     T duty   i
+-----     - ----   -
+    2    96  100   0
+    4 160.9  100   0
+    6 211.3   84   0
+    8   226   56   0
+   10 226.9   54   0
+   15 236.4   57 200
+   20 236.5   57 200
+   30 236.5   55 200
+
+
+
+==== new  set=240  k=0.41  C=900  Pmax=300  tau_sensor=30 ====
+max sensor temp = 240.5 degC at 26.5 min   (overshoot 0.5 degC)
+final temp = 240.5 degC,  final duty = 28 %,  i_term = 0
+
+t_min     T duty i
+-----     - ---- -
+    2  54.6  100 0
+    4  91.8  100 0
+    6 127.1  100 0
+    8 160.6  100 0
+   10 192.3  100 0
+   15   236   37 0
+   20 239.7   30 0
+   30 240.5   28 0
+   40 240.5   28 0
+
+
+
+==== new  set=300  k=0.6  C=700  Pmax=300  tau_sensor=25 ====
+max sensor temp = 299.5 degC at 43.0 min   (overshoot -0.5 degC)
+final temp = 299.5 degC,  final duty = 55 %,  i_term = 163
+
+t_min     T duty   i
+-----     - ----   -
+    2  64.2  100   0
+    4 109.1  100   0
+    6 149.8  100   0
+    8 186.5  100   0
+   10 219.5  100   0
+   15 283.5   69   0
+   20 291.2   54   0
+   30   299   55 163
+   40 299.4   55 163
+
+
+

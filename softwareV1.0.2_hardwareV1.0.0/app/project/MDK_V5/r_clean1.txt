@@ -1,0 +1,5 @@
+﻿left in objects: 8
+exit 1
+compiling ui_wave.c...
+Program Size: Code=30832 RO-data=1000 RW-data=132 ZI-data=26388
+".\objects\AT32F415CBT7_WorkBench.axf" - 0 Error(s), 1 Warning(s).

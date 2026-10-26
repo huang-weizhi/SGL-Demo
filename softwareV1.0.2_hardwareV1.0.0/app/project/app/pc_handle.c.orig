@@ -1,0 +1,258 @@
+/*=============================================================================
+ * pc_handle.c - PC communication protocol handler
+ *
+ * Implements the UART frame protocol between the device and the PC tool:
+ *   frame: 0xD1 0xF0 | cmd1 | cmd2 | id(2B) | data-len(2B) ... | CRC32
+ * cmd1 = GENERAL (register read/write) or FIRMWARE_UPDATE.
+ * Firmware update flow: CONNECT -> ACK -> START -> receive 1KB packets that
+ * are written to the external SPI flash -> END, then reboot into IAP which
+ * copies the image from SPI flash to internal flash.
+ * pc_comm_handle() is the periodic entry point (PC_HANDLE_TIME ms).
+ *===========================================================================*/ \
+#include<stdbool.h>
+
+#include "pc_handle.h"
+
+PC_DATA_t pc_data;
+pc_event_e pc_event = PC_END_EVENT;
+static uint32_t current_flash_addr = SPI_FLASH_UPDATE_START_ADDR;
+
+static void ask_data_cmd_to_pc(PC_DATA_t *pc, uint8_t state)
+{
+    uint32_t crc_value = 0;
+    if (state)
+    {
+        pc->tx_buff[2] = 0x02;
+        pc->tx_buff[8] = 0x1D;
+    }
+    else
+    {
+        pc->tx_buff[2] = 0x03;
+        pc->tx_buff[8] = 0x18;
+    }
+
+    pc->tx_buff[0] = PC_HEAD_1;
+    pc->tx_buff[1] = 0x03;
+
+    pc->tx_buff[3] = LOCAL_DEVICE_ID_2;
+    pc->tx_buff[4] = LOCAL_DEVICE_ID_1;
+    pc->tx_buff[5] = 0x00;
+    pc->tx_buff[6] = 0x0A;
+    pc->tx_buff[7] = 0x1D;
+
+    pc->tx_buff[9] = 0x00;
+    pc->tx_buff[10] = 0x00;
+    pc->tx_buff[11] = 0x00;
+    pc->tx_buff[12] = 0x00;
+    pc->tx_buff[13] = 0x00;
+    pc->tx_buff[14] = 0x00;
+    pc->tx_buff[15] = 0x00;
+    pc->tx_buff[16] = 0x00;
+    memset(pc->check_crc_buff, 0, PC_CRC_BUFF_SIZE);
+    convert_data(pc->tx_buff, pc->check_crc_buff, 1, 16);
+    crc_value = crc_block_calculate(pc->check_crc_buff, 4);
+    crc_data_reset();
+    pc->tx_buff[17] = (crc_value >> 24) & 0xff;
+    pc->tx_buff[18] = (crc_value >> 16) & 0xff;
+    pc->tx_buff[19] = (crc_value >> 8) & 0xff;
+    pc->tx_buff[20] = crc_value & 0xff;
+    pc->tx_buff[21] = PC_HEAD_2;
+
+    uart_send(pc->tx_buff, PC_MAX_SEND_SIZE);
+}
+
+static void ask_connect_cmd_to_pc(PC_DATA_t *pc, const CZ01_t *this)
+{
+    uint32_t crc_value = 0;
+    pc->tx_buff[PC_HEAD1] = PC_HEAD_1;
+    pc->tx_buff[PC_CMD1] = 0x01;
+    pc->tx_buff[PC_CMD2] = 0x01;
+    pc->tx_buff[PC_ID_H] = LOCAL_DEVICE_ID_2;
+    pc->tx_buff[PC_ID_L] = LOCAL_DEVICE_ID_1;
+    pc->tx_buff[PC_DATA_LEN_H] = 0x00;
+    pc->tx_buff[PC_DATA_LEN_L] = 0x0A;
+    pc->tx_buff[PC_DATA1_LEN_H] = this->sw_ver_major;
+    pc->tx_buff[PC_DATA1_LEN_L] = this->sw_ver_minor;
+    pc->tx_buff[PC_DATA2_LEN_H] = this->sw_ver_patch;
+    pc->tx_buff[PC_DATA2_LEN_L] = this->hw_ver_major;
+    pc->tx_buff[PC_DATA3_LEN_H] = this->hw_ver_minor;
+    pc->tx_buff[PC_DATA3_LEN_L] = this->hw_ver_patch;
+    pc->tx_buff[PC_DATA4_LEN_H] = ((this->uid_value >> 24) & 0xff);
+    pc->tx_buff[PC_DATA4_LEN_L] = ((this->uid_value >> 16) & 0xff);
+    pc->tx_buff[PC_DATA5_LEN_H] = ((this->uid_value >> 8) & 0xff);
+    pc->tx_buff[PC_DATA5_LEN_L] = (this->uid_value & 0xff);
+    memset(pc_data.check_crc_buff, 0, PC_CRC_SIZE);
+    convert_data(pc_data.tx_buff, pc_data.check_crc_buff, PC_CMD1, PC_DATA5_LEN_L);
+    crc_value = crc_block_calculate(pc_data.check_crc_buff, PC_CRC_SIZE);
+    crc_data_reset();
+    pc->tx_buff[PC_CRC32_1] = ((crc_value >> 24) & 0xff);
+    pc->tx_buff[PC_CRC32_2] = ((crc_value >> 16) & 0xff);
+    pc->tx_buff[PC_CRC32_3] = ((crc_value >> 8) & 0xff);
+    pc->tx_buff[PC_CRC32_4] = (crc_value & 0xff);
+    pc->tx_buff[PC_HEAD2] = PC_HEAD_2;
+    /* send data */
+    uart_send(pc->tx_buff, PC_MAX_SEND_SIZE);
+}
+
+static void get_event_from_pc(CZ01_t *this,PC_DATA_t *pc)
+{
+    uint32_t crc_value;
+    if(this->flash_updata)
+		return;
+    if (uart_rx_available())
+    {
+		pc->read_size = uart_read(pc->rx_buff, PC_MAX_RECV_SIZE);
+		
+        if (pc->read_size == PC_MAX_RECV_SIZE)
+        {
+            if (PC_CHECK_HEAD(pc->rx_buff[PC_HEAD1], pc->rx_buff[PC_HEAD2]))
+            {
+                /* crc check */
+                convert_data(pc->rx_buff, pc->check_crc_buff, PC_CMD1, PC_DATA5_LEN_L);
+                crc_value = crc_block_calculate(pc->check_crc_buff, PC_CRC_SIZE);
+                crc_data_reset();
+
+                if (pc->rx_buff[PC_CRC32_1] == ((crc_value >> 24) & 0xff) &&
+                    pc->rx_buff[PC_CRC32_2] == ((crc_value >> 16) & 0xff) &&
+                    pc->rx_buff[PC_CRC32_3] == ((crc_value >> 8) & 0xff) &&
+                    pc->rx_buff[PC_CRC32_4] == (crc_value & 0xff))
+                {
+                    /* connect PC */
+                    if (pc->rx_buff[PC_CMD1] == 0x01 && pc->rx_buff[PC_CMD2] == 0x01 && pc->rx_buff[PC_ID_L] == 0x00)
+                    {
+                        pc_event = CONNECT_PC_EVENT;
+                    }
+                    /* jump to bootloader */
+                    else if (pc->rx_buff[PC_CMD1] == PC_FIRMWARE_UPDATE && pc->rx_buff[PC_CMD2] == PC_FIRMWARE_UPDATE_CONNECT && pc->rx_buff[PC_ID_L] == 0x00)
+                    {
+                        pc_event = IAP_EVENT;
+                    }
+                    else if (pc->rx_buff[PC_CMD1] == PC_UI_UPDATE && pc->rx_buff[PC_CMD2] == PC_FIRMWARE_UPDATE_CONNECT && pc->rx_buff[PC_ID_L] == 0x00)
+                    {
+                        pc_event = FLASU_UPDATA_EVENT;
+                    }
+                    /* other cmd */
+                    else
+                    {
+                        __NOP();
+                    }
+                }
+            }
+
+            pc->read_size = 0;
+        }
+    }
+}
+#if 0
+static void send_data_to_pc(CZ01_t *this)
+{
+	
+}
+
+void send_heartbeat_to_pc(CZ01_t *this, PC_DATA_t *pc)
+{
+	
+}
+
+
+#endif
+
+static void get_flash_data_from_pc(CZ01_t *this, PC_DATA_t *pc)
+{
+	if (!this->flash_updata)
+		return;
+	
+	if (uart_rx_available())
+	{
+	    pc->read_size = uart_read(pc->rx_buff, PC_MAX_RECV_SIZE);
+
+        if (pc->read_size == UPDATE_PACKET_SIZE)
+        {
+             if (PC_CHECK_HEAD(pc->rx_buff[PC_HEAD1], pc->rx_buff[1035]))
+        {
+            memset(pc->check_crc_buff, 0, PC_CRC_BUFF_SIZE);
+            convert_data(pc->rx_buff, pc->check_crc_buff, 1, 1030);
+            uint32_t crc_value = crc_block_calculate(pc->check_crc_buff, 258);
+            crc_data_reset();
+
+            if (pc->rx_buff[1031] == ((crc_value >> 24) & 0xff)  &&
+                    pc->rx_buff[1032] == ((crc_value >> 16) & 0xff)  &&
+                    pc->rx_buff[1033] == ((crc_value >> 8)  & 0xff)   &&
+                    pc->rx_buff[1034] == (crc_value & 0xff))
+            {
+                 spiflash_write(&pc_data.rx_buff[UPDATE_DATA_OFFSET],
+                                current_flash_addr, UPDATE_DATA_LEN);
+				
+                current_flash_addr += 1024;
+                ask_data_cmd_to_pc(&pc_data,ASK_OK);
+
+                if (pc->rx_buff[2] == 0x04)
+                {
+					wk_delay_ms(20);
+                    nvic_system_reset();
+					
+                }
+            }
+            else
+            {
+                ask_data_cmd_to_pc(&pc_data,ASK_ERROR);
+            }
+        }
+        else
+        {
+            ask_data_cmd_to_pc(&pc_data,ASK_ERROR);
+        }
+        memset(pc->rx_buff, 0, PC_RX_BUFF_SIZE);
+        pc->read_size = 0;
+        }
+
+        
+	}
+	
+
+        
+    
+}
+
+void handing_pc_event(CZ01_t *this)
+{
+    static bool first_in = true;
+    /* get info */
+    if (first_in)
+    {
+        get_cz01_version(this);
+        this->uid_value = get_mcu_info(this);
+        first_in = false;
+    }
+
+    switch (pc_event)
+    {
+    case CONNECT_PC_EVENT:
+        ask_connect_cmd_to_pc(&pc_data, this);
+        pc_event = PC_END_EVENT;
+        break;
+
+    case IAP_EVENT:
+        pc_event = PC_END_EVENT;
+        iap_flag = IAP_REV_FLAG_DONE;
+        break;
+	
+    case FLASU_UPDATA_EVENT:
+        this->flash_updata = true;
+        memset(pc_data.rx_buff, 0, PC_RX_BUFF_SIZE);
+        ask_data_cmd_to_pc(&pc_data, ASK_OK);
+        pc_event = PC_END_EVENT;
+        break;
+	
+    case PC_END_EVENT:
+        break;
+    }
+
+}
+
+void pc_handle(void)
+{
+    get_event_from_pc(&scz01,&pc_data);
+	get_flash_data_from_pc(&scz01,&pc_data);
+	handing_pc_event(&scz01);
+}

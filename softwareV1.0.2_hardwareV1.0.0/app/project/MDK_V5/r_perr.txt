@@ -1,0 +1,24 @@
+﻿.\objects\AT32F415CBT7_WorkBench.axf: Error: L6406E: No space in execution regions with .ANY selector matching lto-llvm-683a07.o(.bss.pxReadyTasksLists).
+.\objects\AT32F415CBT7_WorkBench.axf: Error: L6406E: No space in execution regions with .ANY selector matching lto-llvm-683a07.o(.bss.prvCheckForValidListAndQueue.ucStaticTimerQueueStorage).
+.\objects\AT32F415CBT7_WorkBench.axf: Error: L6406E: No space in execution regions with .ANY selector matching libspace.o(.bss).
+.\objects\AT32F415CBT7_WorkBench.axf: Error: L6406E: No space in execution regions with .ANY selector matching lto-llvm-683a07.o(.bss.idle_task_tcb).
+.\objects\AT32F415CBT7_WorkBench.axf: Error: L6406E: No space in execution regions with .ANY selector matching lto-llvm-683a07.o(.bss.timer_task_tcb).
+.\objects\AT32F415CBT7_WorkBench.axf: Error: L6406E: No space in execution regions with .ANY selector matching lto-llvm-683a07.o(.bss.prvCheckForValidListAndQueue.xStaticTimerQueue).
+.\objects\AT32F415CBT7_WorkBench.axf: Error: L6406E: No space in execution regions with .ANY selector matching lto-llvm-683a07.o(.bss.xQueueRegistry).
+.\objects\AT32F415CBT7_WorkBench.axf: Error: L6406E: No space in execution regions with .ANY selector matching lto-llvm-683a07.o(.bss.scz01).
+.\objects\AT32F415CBT7_WorkBench.axf: Error: L6406E: No space in execution regions with .ANY selector matching lto-llvm-683a07.o(.data.key_heatting).
+.\objects\AT32F415CBT7_WorkBench.axf: Error: L6406E: No space in execution regions with .ANY selector matching lto-llvm-683a07.o(.data.key_channel).
+.\objects\AT32F415CBT7_WorkBench.axf: Error: L6406E: No space in execution regions with .ANY selector matching lto-llvm-683a07.o(.data.key_add).
+.\objects\AT32F415CBT7_WorkBench.axf: Error: L6406E: No space in execution regions with .ANY selector matching lto-llvm-683a07.o(.data.key_redece).
+    }
+
+    lcd_blit_wait();                                /* finish + release CS */
+    wv.dma_pending = false;
+}
+/* TEMP PROBE: keep the module linked so its RAM can be measured */
+typedef void (*wave_probe_fn_t)(void);
+__attribute__((used)) static wave_probe_fn_t const wave_probe_refs[] = {
+    (wave_probe_fn_t)wave_init,
+    (wave_probe_fn_t)wave_refresh,
+    (wave_probe_fn_t)wave_set_point,
+};

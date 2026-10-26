@@ -1,0 +1,5 @@
+﻿exit 2
+compiling ui_wave.c...
+../ui_base/ui_wave.c(64): error: LUT_BRANCH_ON
+64 | #error LUT_BRANCH_ON
+".\objects\AT32F415CBT7_WorkBench.axf" - 1 Error(s), 0 Warning(s).

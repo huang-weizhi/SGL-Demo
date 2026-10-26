@@ -1,0 +1,1330 @@
+/*=============================================================================
+ * ui_handle.c - Top level UI dispatcher
+ *
+ * show_page() renders the frame of the current page (status bar, bottom bar,
+ * page specific statics). Each page's periodic service lives in its own file
+ * under ../ui_show_page/. ui_handle() runs every UI cycle:
+ *   1. show_page()           - redraw page frame when the page changed
+ *   2. show_curve_page()     - curve page service
+ *   3. show_value_page()     - value page service
+ *===========================================================================*/
+#include "ui_handle.h"
+
+static void clear_selection(Page_e page)
+{
+    switch (page)
+    {
+    case PAGE_MENU_SELECT_SHOW_STYLE_CN:
+        lcd_show_picture(24, 50, MENU_1_PAGE_ICON_UNSELECT_SHOW_STYLE_CN, spiflash_read);
+        break;
+
+    case PAGE_MENU_SELECT_SHOW_STYLE_EN:
+        // lcd_show_picture(24, 50, MENU_1_PAGE_ICON_UNSELECT_SHOW_STYLE_EN, spiflash_read);
+        break;
+
+    case PAGE_MENU_SELECT_UNIT_CN:
+        lcd_show_picture(24, 97, MENU_1_PAGE_ICON_UNSELECT_UNIT_CN, spiflash_read);
+        break;
+
+    case PAGE_MENU_SELECT_UNIT_EN:
+        // lcd_show_picture(24, 97, MENU_1_PAGE_ICON_UNSELECT_UNIT_EN, spiflash_read);
+        break;
+
+    case PAGE_MENU_SELECT_CALTEMP_CN:
+        lcd_show_picture(24, 143, MENU_1_PAGE_ICON_UNSELECT_CALTEMP_CN, spiflash_read);
+        break;
+
+    case PAGE_MENU_SELECT_CALTEMP_EN:
+        // lcd_show_picture(24, 143, MENU_1_PAGE_ICON_UNSELECT_CALTEMP_EN, spiflash_read);
+        break;
+
+    case PAGE_MENU_SELECT_LANGUAGE_CN:
+        lcd_show_picture(24, 190, MENU_1_PAGE_ICON_UNSELECT_LANGUAGE_CN, spiflash_read);
+        break;
+
+    case PAGE_MENU_SELECT_LANGUAGE_EN:
+        // lcd_show_picture(24, 190, MENU_1_PAGE_ICON_UNSELECT_LANGUAGE_EN, spiflash_read);
+        break;
+
+    case PAGE_MENU_SELECT_SPEAKER_CN:
+        lcd_show_picture(24, 236, MENU_1_PAGE_ICON_UNSELECT_SPEAKER_CN, spiflash_read);
+        break;
+
+    case PAGE_MENU_SELECT_SPEAKER_EN:
+        // lcd_show_picture(24, 236, MENU_1_PAGE_ICON_UNSELECT_SPEAKER_EN, spiflash_read);
+        break;
+	
+
+    case PAGE_MENU_SELECT_COUNTDOWN_MODE_CN:
+        lcd_show_picture(24, 50, MENU_2_PAGE_ICON_UNSELECT_COUNTDOWN_MODE_CN, spiflash_read);
+        break;
+
+    case PAGE_MENU_SELECT_COUNTDOWN_MODE_EN:
+        // lcd_show_picture(24, 50, MENU_2_PAGE_ICON_UNSELECT_COUNTDOWN_MODE_EN, spiflash_read);
+        break;
+	
+	case PAGE_MENU_SELECT_VERSTION_CN:
+        lcd_show_picture(24, 97, MENU_2_PAGE_ICON_UNSELECT_VERSTION_CN, spiflash_read);
+        break;
+
+    case PAGE_MENU_SELECT_VERSTION_EN:
+        // lcd_show_picture(24, 97, MENU_2_PAGE_ICON_UNSELECT_VERSTION_EN, spiflash_read);
+        break;
+
+    case PAGE_MENU_SELECT_RESET_CN:
+        lcd_show_picture(24, 143, MENU_2_PAGE_ICON_UNSELECT_RESET_CN, spiflash_read);
+        break;
+
+    case PAGE_MENU_SELECT_RESET_EN:
+        // lcd_show_picture(24, 143, MENU_2_PAGE_ICON_UNSELECT_RESET_EN, spiflash_read);
+        break;
+
+    case PAGE_MENU_SELECT_SUPPORT_CN:
+        lcd_show_picture(24, 190, MENU_2_PAGE_ICON_UNSELECT_SUPPORT_CN, spiflash_read);
+        break;
+
+    case PAGE_MENU_SELECT_SUPPORT_EN:
+        // lcd_show_picture(24, 190, MENU_2_PAGE_ICON_UNSELECT_SUPPORT_EN, spiflash_read);
+        break;
+
+    case PAGE_MENU_SELECT_RETURN_MENU_CN:
+        lcd_show_picture(78, 236, MENU_2_PAGE_ICON_UNSELECT_EXIT_CN, spiflash_read);
+        break;
+
+    case PAGE_MENU_SELECT_RETURN_MENU_EN:
+        // lcd_show_picture(78, 236, MENU_2_PAGE_ICON_UNSELECT_EXIT_EN, spiflash_read);
+        break;
+
+    default:
+        break;
+    }
+}
+
+static void show_menu(CZ01_t *this)
+{
+    static bool show_init = true;
+    static bool first_in_menu_1 = false;
+    static bool first_in_menu_2 = false;
+    static uint16_t show_reset_time = 150;
+    static Language_e last_language;
+
+    if (show_init)
+    {
+        this->refreshing_page = true;
+        /* show top status bar */
+        lcd_show_picture(0, 0, ICON_STATUS_BAR_TOP, spiflash_read);
+
+        /* show speaker status */
+        if (this->function.speaker == ON)
+        {
+            lcd_show_picture(215, 8, ICON_VOLUME_ON, spiflash_read);
+        }
+        else
+        {
+            lcd_show_picture(215, 8, ICON_VOLUME_OFF, spiflash_read);
+        }
+
+        /* jump to page curve */
+        this->page = PAGE_CURVE;
+        this->refreshing_page = false;
+        /* set fahrenheit value */
+        show_init = false;
+    }
+
+    if (this->last_page != this->page)
+    {
+        switch (this->last_page)
+        {
+        case PAGE_LOGO:
+            lcd_fill(25, 144, 215, 177, BLACK);
+            break;
+
+        case PAGE_CURVE:
+            lcd_fill(13, 38, 225, 179, BLACK);
+            lcd_fill(10, 186, 225, 313, BLACK);
+            break;
+
+        case PAGE_VALUE:
+            lcd_fill(13, 38, 226, 259, BLACK);
+            lcd_fill(13, 271, 226, 309, BLACK);
+            break;
+
+        case PAGE_SETTING_SHOW_STYLE_CN:
+            lcd_fill(24, 87, 216, 217, BLACK);
+            break;
+
+        case PAGE_SETTING_SHOW_STYLE_EN:
+            lcd_fill(24, 87, 216, 217, BLACK);
+            break;
+
+        case PAGE_SETTING_UNIT_CN:
+            lcd_fill(24, 87, 216, 217, BLACK);
+            break;
+
+        case PAGE_SETTING_UNIT_EN:
+            lcd_fill(24, 87, 216, 217, BLACK);
+            break;
+
+        case PAGE_SETTING_CALTEMP_CN:
+            lcd_fill(24, 87, 216, 217, BLACK);
+            break;
+
+        case PAGE_SETTING_CALTEMP_EN:
+            lcd_fill(24, 87, 216, 217, BLACK);
+            break;
+
+        case PAGE_SETTING_CN:
+            if (this->page == PAGE_SETTING_EN)
+            {
+                break;
+            }
+
+            lcd_fill(18, 118, 221, 208, BLACK);
+            break;
+
+        case PAGE_SETTING_EN:
+            if (this->page == PAGE_SETTING_CN)
+            {
+                break;
+            }
+
+            lcd_fill(18, 118, 221, 208, BLACK);
+            break;
+
+        case PAGE_SETTING_SPEAKER_CN:
+            lcd_fill(24, 87, 216, 217, BLACK);
+            break;
+
+        case PAGE_SETTING_SPEAKER_EN:
+            lcd_fill(24, 87, 216, 217, BLACK);
+            break;
+
+        case PAGE_SETTING_COUNTDOWN_MODE_CN:
+            lcd_fill(24, 87, 216, 217, BLACK);
+            break;
+
+        case PAGE_SETTING_COUNTDOWN_MODE_EN:
+            lcd_fill(24, 87, 216, 217, BLACK);
+            break;
+
+        case PAGE_SETTING_VERSTION_CN:
+            lcd_fill(24, 87, 216, 217, BLACK);
+            break;
+
+        case PAGE_SETTING_VERSTION_EN:
+            lcd_fill(24, 87, 216, 217, BLACK);
+            break;
+
+        case PAGE_SETTING_UNSELECT_RESET_CN:
+            if (this->page == PAGE_SETTING_SELECT_RESET_CN ||
+                    this->page == PAGE_SETTING_RESET_DONE_CN)
+            {
+                break;
+            }
+
+            lcd_fill(24, 62, 216, 231, BLACK);
+            lcd_fill(78, 259, 161, 288, BLACK);
+            break;
+
+        case PAGE_SETTING_UNSELECT_RESET_EN:
+            // if(this->page == PAGE_SETTING_SELECT_RESET_EN ||
+            //				this->page ==PAGE_SETTING_RESET_DONE_EN)
+            //					break;
+            lcd_fill(24, 62, 216, 231, BLACK);
+            lcd_fill(78, 259, 161, 288, BLACK);
+            break;
+
+        case PAGE_SETTING_SELECT_RESET_CN:
+            if (this->page == PAGE_SETTING_UNSELECT_RESET_CN ||
+                    this->page == PAGE_SETTING_RESET_DONE_CN)
+            {
+                break;
+            }
+
+            lcd_fill(24, 62, 216, 231, BLACK);
+            lcd_fill(78, 259, 161, 288, BLACK);
+            break;
+
+        case PAGE_SETTING_SELECT_RESET_EN:
+            // if(this->page == PAGE_SETTING_UNSELECT_RESET_CN ||
+            //				this->page ==PAGE_SETTING_RESET_DONE_CN)
+            //					break;
+            lcd_fill(24, 62, 216, 231, BLACK);
+            lcd_fill(78, 259, 161, 288, BLACK);
+            break;
+
+        case PAGE_SETTING_RESET_DONE_CN:
+            lcd_fill(24, 62, 216, 231, BLACK);
+            lcd_fill(78, 259, 161, 288, BLACK);
+            break;
+
+        case PAGE_SETTING_RESET_DONE_EN:
+            lcd_fill(24, 62, 216, 231, BLACK);
+            lcd_fill(78, 259, 161, 288, BLACK);
+            break;
+
+        case PAGE_SETTING_SUPPORT_CN:
+            lcd_fill(14, 62, 224, 265, BLACK);
+            break;
+
+        case PAGE_SETTING_SUPPORT_EN:
+            lcd_fill(14, 62, 224, 265, BLACK);
+            break;
+
+        default:
+            break;
+        }
+
+        if (this->last_page >= PAGE_MENU_SELECT_SHOW_STYLE_CN &&
+                this->last_page <= PAGE_SETTING_SUPPORT_EN)
+        {
+            if (this->page == PAGE_CURVE ||
+                    this->page == PAGE_VALUE)
+            {
+                if (this->last_page >= PAGE_MENU_SELECT_SHOW_STYLE_CN &&
+                        this->last_page <= PAGE_MENU_UNSELECT_SPEAKER_EN)
+                {
+                    /* clean menu 1 */
+                    lcd_fill(24, 50, 216, 267, BLACK);
+                    /* clean botton bar */
+                    lcd_fill(0, 286, 240, 320, BLACK);
+                }
+                else if (this->last_page >= PAGE_MENU_SELECT_VERSTION_CN &&
+                         this->last_page <= PAGE_MENU_UNSELECT_RETURN_MENU_EN)
+                {
+                    /* clean menu 2 */
+                    lcd_fill(24, 50, 216, 174, BLACK);
+                    lcd_fill(78, 255, 162, 285, BLACK);
+                    /* clean botton bar */
+                    lcd_fill(0, 286, 240, 320, BLACK);
+                }
+                else if (this->last_page >= PAGE_SETTING_SHOW_STYLE_CN &&
+                         this->last_page <= PAGE_SETTING_SUPPORT_EN)
+                {
+                    /* clean botton bar */
+                    lcd_fill(0, 286, 240, 320, BLACK);
+                }
+            }
+        }
+
+        /* Check if the current page is in the menu 1 */
+        if (this->page >= PAGE_MENU_SELECT_SHOW_STYLE_CN &&
+                this->page <= PAGE_MENU_UNSELECT_SPEAKER_EN)
+        {
+            if (this->last_page >= PAGE_LOGO && this->last_page <= PAGE_VALUE ||
+                    this->last_page >= PAGE_MENU_SELECT_COUNTDOWN_MODE_CN && this->last_page <= PAGE_SETTING_SUPPORT_EN)
+            {
+                /* If this is your first time accessing the menu, the first page will list all options. */
+                first_in_menu_1 = true;
+
+                /* last page was in menu 2 */
+                if (this->last_page >= PAGE_MENU_SELECT_VERSTION_CN && this->last_page <= PAGE_MENU_UNSELECT_RETURN_MENU_EN)
+                {
+                    /* clean menu 2 */
+                    lcd_fill(78, 255, 161, 284, BLACK);
+                }
+
+                if (this->function.language == CN)
+                {
+                    switch (this->menu_select)
+                    {
+                    case MENU_SELECT_PAGE_MODE:
+                        /* show mune 1 */
+                        lcd_show_picture(24, 50, MENU_1_PAGE_ICON_SELECT_SHOW_STYLE_CN, spiflash_read);
+                        lcd_show_picture(24, 97, MENU_1_PAGE_ICON_UNSELECT_UNIT_CN, spiflash_read);
+                        lcd_show_picture(24, 143, MENU_1_PAGE_ICON_UNSELECT_CALTEMP_CN, spiflash_read);
+                        lcd_show_picture(24, 190, MENU_1_PAGE_ICON_UNSELECT_LANGUAGE_CN, spiflash_read);
+                        lcd_show_picture(24, 236, MENU_1_PAGE_ICON_UNSELECT_SPEAKER_CN, spiflash_read);
+                        break;
+
+                    case MENU_SELECT_UNIT:
+                        lcd_show_picture(24, 50, MENU_1_PAGE_ICON_UNSELECT_SHOW_STYLE_CN, spiflash_read);
+                        lcd_show_picture(24, 97, MENU_1_PAGE_ICON_SELECT_UNIT_CN, spiflash_read);
+                        lcd_show_picture(24, 143, MENU_1_PAGE_ICON_UNSELECT_CALTEMP_CN, spiflash_read);
+                        lcd_show_picture(24, 190, MENU_1_PAGE_ICON_UNSELECT_LANGUAGE_CN, spiflash_read);
+                        lcd_show_picture(24, 236, MENU_1_PAGE_ICON_UNSELECT_SPEAKER_CN, spiflash_read);
+                        break;
+
+                    case MENU_SELECT_CAL_TEMP:
+                        lcd_show_picture(24, 50, MENU_1_PAGE_ICON_UNSELECT_SHOW_STYLE_CN, spiflash_read);
+                        lcd_show_picture(24, 97, MENU_1_PAGE_ICON_UNSELECT_UNIT_CN, spiflash_read);
+                        lcd_show_picture(24, 143, MENU_1_PAGE_ICON_SELECT_CALTEMP_CN, spiflash_read);
+                        lcd_show_picture(24, 190, MENU_1_PAGE_ICON_UNSELECT_LANGUAGE_CN, spiflash_read);
+                        lcd_show_picture(24, 236, MENU_1_PAGE_ICON_UNSELECT_SPEAKER_CN, spiflash_read);
+                        break;
+
+                    case MENU_SELECT_LANGUAGE:
+                        lcd_show_picture(24, 50, MENU_1_PAGE_ICON_UNSELECT_SHOW_STYLE_CN, spiflash_read);
+                        lcd_show_picture(24, 97, MENU_1_PAGE_ICON_UNSELECT_UNIT_CN, spiflash_read);
+                        lcd_show_picture(24, 143, MENU_1_PAGE_ICON_UNSELECT_CALTEMP_CN, spiflash_read);
+                        lcd_show_picture(24, 190, MENU_1_PAGE_ICON_SELECT_LANGUAGE_CN, spiflash_read);
+                        lcd_show_picture(24, 236, MENU_1_PAGE_ICON_UNSELECT_SPEAKER_CN, spiflash_read);
+                        break;
+
+                    case MENU_SELECT_SPEAKER:
+                        lcd_show_picture(24, 50, MENU_1_PAGE_ICON_UNSELECT_SHOW_STYLE_CN, spiflash_read);
+                        lcd_show_picture(24, 97, MENU_1_PAGE_ICON_UNSELECT_UNIT_CN, spiflash_read);
+                        lcd_show_picture(24, 143, MENU_1_PAGE_ICON_UNSELECT_CALTEMP_CN, spiflash_read);
+                        lcd_show_picture(24, 190, MENU_1_PAGE_ICON_UNSELECT_LANGUAGE_CN, spiflash_read);
+                        lcd_show_picture(24, 236, MENU_1_PAGE_ICON_SELECT_SPEAKER_CN, spiflash_read);
+                        break;
+
+                    default:
+                        break;
+                    }
+
+                    /* mune 1 bottom  */
+                    lcd_show_picture(0, 286, ICON_STATUS_BAR_BOTTOM_CN, spiflash_read);
+                }
+                else
+                {
+                    //					switch (this->menu_select)
+                    //					{
+                    //					case MENU_SELECT_PAGE_MODE:
+                    //						/* show mune 1 */
+                    //						lcd_show_picture(24, 50, MENU_1_PAGE_ICON_SELECT_SHOW_STYLE_EN, spiflash_read);
+                    //						lcd_show_picture(24, 97, MENU_1_PAGE_ICON_UNSELECT_UNIT_EN, spiflash_read);
+                    //						lcd_show_picture(24, 143, MENU_1_PAGE_ICON_UNSELECT_CALTEMP_EN, spiflash_read);
+                    //						lcd_show_picture(24, 190, MENU_1_PAGE_ICON_UNSELECT_LANGUAGE_EN, spiflash_read);
+                    //						lcd_show_picture(24, 236, MENU_1_PAGE_ICON_UNSELECT_SPEAKER_EN, spiflash_read);
+                    //						break;
+                    //					case MENU_SELECT_UNIT:
+                    //						lcd_show_picture(24, 50, MENU_1_PAGE_ICON_UNSELECT_SHOW_STYLE_EN, spiflash_read);
+                    //						lcd_show_picture(24, 97, MENU_1_PAGE_ICON_SELECT_UNIT_EN, spiflash_read);
+                    //						lcd_show_picture(24, 143, MENU_1_PAGE_ICON_UNSELECT_CALTEMP_EN, spiflash_read);
+                    //						lcd_show_picture(24, 190, MENU_1_PAGE_ICON_UNSELECT_LANGUAGE_EN, spiflash_read);
+                    //						lcd_show_picture(24, 236, MENU_1_PAGE_ICON_UNSELECT_SPEAKER_EN, spiflash_read);
+                    //						break;
+                    //					case MENU_SELECT_CAL_TEMP:
+                    //						lcd_show_picture(24, 50, MENU_1_PAGE_ICON_UNSELECT_SHOW_STYLE_EN, spiflash_read);
+                    //						lcd_show_picture(24, 97, MENU_1_PAGE_ICON_UNSELECT_UNIT_EN, spiflash_read);
+                    //						lcd_show_picture(24, 143, MENU_1_PAGE_ICON_SELECT_CALTEMP_EN, spiflash_read);
+                    //						lcd_show_picture(24, 190, MENU_1_PAGE_ICON_UNSELECT_LANGUAGE_EN, spiflash_read);
+                    //						lcd_show_picture(24, 236, MENU_1_PAGE_ICON_UNSELECT_SPEAKER_EN, spiflash_read);
+                    //						break;
+                    //					case MENU_SELECT_LANGUAGE:
+                    //						lcd_show_picture(24, 50, MENU_1_PAGE_ICON_UNSELECT_SHOW_STYLE_EN, spiflash_read);
+                    //						lcd_show_picture(24, 97, MENU_1_PAGE_ICON_UNSELECT_UNIT_EN, spiflash_read);
+                    //						lcd_show_picture(24, 143, MENU_1_PAGE_ICON_UNSELECT_CALTEMP_EN, spiflash_read);
+                    //						lcd_show_picture(24, 190, MENU_1_PAGE_ICON_SELECT_LANGUAGE_EN, spiflash_read);
+                    //						lcd_show_picture(24, 236, MENU_1_PAGE_ICON_UNSELECT_SPEAKER_EN, spiflash_read);
+                    //						break;
+                    //					case MENU_SELECT_SPEAKER:
+                    //						lcd_show_picture(24, 50, MENU_1_PAGE_ICON_UNSELECT_SHOW_STYLE_EN, spiflash_read);
+                    //						lcd_show_picture(24, 97, MENU_1_PAGE_ICON_UNSELECT_UNIT_EN, spiflash_read);
+                    //						lcd_show_picture(24, 143, MENU_1_PAGE_ICON_UNSELECT_CALTEMP_EN, spiflash_read);
+                    //						lcd_show_picture(24, 190, MENU_1_PAGE_ICON_UNSELECT_LANGUAGE_EN, spiflash_read);
+                    //						lcd_show_picture(24, 236, MENU_1_PAGE_ICON_SELECT_SPEAKER_EN, spiflash_read);
+                    //						break;
+                    //					default:
+                    //						break;
+                    //					}
+                    //        lcd_show_picture(0, 286, ICON_STATUS_BAR_BOTTOM_EN, spiflash_read);
+                }
+            }
+        }
+        /* Check if the current page is in the menu 2 */
+        else if (this->page >= PAGE_MENU_SELECT_COUNTDOWN_MODE_CN &&
+                 this->page <= PAGE_MENU_UNSELECT_RETURN_MENU_EN)
+        {
+            if (this->last_page >= PAGE_MENU_SELECT_SHOW_STYLE_CN && this->last_page <= PAGE_MENU_UNSELECT_SPEAKER_EN ||
+                    this->last_page >= PAGE_SETTING_SHOW_STYLE_CN && this->last_page <= PAGE_SETTING_SUPPORT_EN)
+            {
+                /* If this is your first time accessing the second page of the menu, all options will be listed. */
+                first_in_menu_2 = true;
+
+                // LCD_Fill(10, 35, 475, 272, BLACK);
+                /* last page was in menu 1 */
+                if (this->last_page >= PAGE_MENU_SELECT_SHOW_STYLE_CN && this->last_page <= PAGE_MENU_UNSELECT_SPEAKER_EN)
+                {
+                    /* clean menu 1 */
+                    lcd_fill(24, 190, 216, 267, BLACK);
+                }
+
+                if (this->function.language == CN)
+                {
+                    switch (this->menu_select)
+                    {
+                    case MENU_SELECT_COUNTDOWN_MODE:
+                        /* show mune 2 */
+                        lcd_show_picture(24, 50, MENU_2_PAGE_ICON_SELECT_COUNTDOWN_MODE_CN, spiflash_read);
+                        lcd_show_picture(24, 97, MENU_2_PAGE_ICON_UNSELECT_VERSTION_CN, spiflash_read);
+                        lcd_show_picture(24, 143, MENU_2_PAGE_ICON_UNSELECT_RESET_CN, spiflash_read);
+                        lcd_show_picture(24, 190, MENU_2_PAGE_ICON_UNSELECT_SUPPORT_CN, spiflash_read);
+                        lcd_show_picture(78, 236, MENU_2_PAGE_ICON_UNSELECT_EXIT_CN, spiflash_read);
+                        break;
+
+                    case MENU_SELECT_VERSTION:
+                        /* show mune 2 */
+                        lcd_show_picture(24, 50, MENU_2_PAGE_ICON_UNSELECT_COUNTDOWN_MODE_CN, spiflash_read);
+                        lcd_show_picture(24, 97, MENU_2_PAGE_ICON_SELECT_VERSTION_CN, spiflash_read);
+                        lcd_show_picture(24, 143, MENU_2_PAGE_ICON_UNSELECT_RESET_CN, spiflash_read);
+                        lcd_show_picture(24, 190, MENU_2_PAGE_ICON_UNSELECT_SUPPORT_CN, spiflash_read);
+                        lcd_show_picture(78, 236, MENU_2_PAGE_ICON_UNSELECT_EXIT_CN, spiflash_read);
+                        break;
+
+                    case MENU_SELECT_RESET:
+                        lcd_show_picture(24, 50, MENU_2_PAGE_ICON_UNSELECT_COUNTDOWN_MODE_CN, spiflash_read);
+                        lcd_show_picture(24, 97, MENU_2_PAGE_ICON_UNSELECT_VERSTION_CN, spiflash_read);
+                        lcd_show_picture(24, 143, MENU_2_PAGE_ICON_SELECT_RESET_CN, spiflash_read);
+                        lcd_show_picture(24, 190, MENU_2_PAGE_ICON_UNSELECT_SUPPORT_CN, spiflash_read);
+                        lcd_show_picture(78, 236, MENU_2_PAGE_ICON_UNSELECT_EXIT_CN, spiflash_read);
+                        break;
+
+                    case MENU_SELECT_SUPPORT:
+                        lcd_show_picture(24, 50, MENU_2_PAGE_ICON_UNSELECT_COUNTDOWN_MODE_CN, spiflash_read);
+                        lcd_show_picture(24, 97, MENU_2_PAGE_ICON_UNSELECT_VERSTION_CN, spiflash_read);
+                        lcd_show_picture(24, 143, MENU_2_PAGE_ICON_UNSELECT_RESET_CN, spiflash_read);
+                        lcd_show_picture(24, 190, MENU_2_PAGE_ICON_SELECT_SUPPORT_CN, spiflash_read);
+                        lcd_show_picture(78, 236, MENU_2_PAGE_ICON_UNSELECT_EXIT_CN, spiflash_read);
+                        break;
+
+                    case MENU_SELECT_EXIT_MENU:
+                        lcd_show_picture(24, 50, MENU_2_PAGE_ICON_UNSELECT_COUNTDOWN_MODE_CN, spiflash_read);
+                        lcd_show_picture(24, 97, MENU_2_PAGE_ICON_UNSELECT_VERSTION_CN, spiflash_read);
+                        lcd_show_picture(24, 143, MENU_2_PAGE_ICON_UNSELECT_RESET_CN, spiflash_read);
+                        lcd_show_picture(24, 190, MENU_2_PAGE_ICON_UNSELECT_SUPPORT_CN, spiflash_read);
+                        lcd_show_picture(78, 236, MENU_2_PAGE_ICON_SELECT_EXIT_CN, spiflash_read);
+                        break;
+
+                    default:
+                        break;
+                    }
+
+                    /* mune 2 bottom  */
+                    lcd_show_picture(0, 286, ICON_STATUS_BAR_BOTTOM_CN, spiflash_read);
+                }
+                else
+                {
+                    //                   switch (this->menu_select)
+                    //				{
+                    //					case MENU_SELECT_COUNTDOWN_MODE:
+                    //						/* show mune 2 */
+                    //						lcd_show_picture(24, 50, MENU_2_PAGE_ICON_SELECT_COUNTDOWN_MODE_EN, spiflash_read);
+                    //						lcd_show_picture(24, 97, MENU_2_PAGE_ICON_UNSELECT_VERSTION_EN, spiflash_read);
+                    //						lcd_show_picture(24, 143, MENU_2_PAGE_ICON_UNSELECT_RESET_EN, spiflash_read);
+                    //					    lcd_show_picture(24, 190, MENU_2_PAGE_ICON_UNSELECT_SUPPORT_EN, spiflash_read);
+                    //						lcd_show_picture(78, 236, MENU_2_PAGE_ICON_UNSELECT_EXIT_EN, spiflash_read);
+                    //						break;
+                    //					case MENU_SELECT_VERSTION:
+                    //						/* show mune 2 */
+                    //                        lcd_show_picture(24, 50, MENU_2_PAGE_ICON_UNSELECT_COUNTDOWN_MODE_EN, spiflash_read);
+                    //						lcd_show_picture(24, 97, MENU_2_PAGE_ICON_SELECT_VERSTION_EN, spiflash_read);
+                    //						lcd_show_picture(24, 143, MENU_2_PAGE_ICON_UNSELECT_RESET_EN, spiflash_read);
+                    //					    lcd_show_picture(24, 190, MENU_2_PAGE_ICON_UNSELECT_SUPPORT_EN, spiflash_read);
+                    //						lcd_show_picture(78, 236, MENU_2_PAGE_ICON_UNSELECT_EXIT_EN, spiflash_read);
+                    //						break;
+                    //					case MENU_SELECT_RESET:
+                    //                        lcd_show_picture(24, 50, MENU_2_PAGE_ICON_UNSELECT_COUNTDOWN_MODE_EN, spiflash_read);
+                    //						lcd_show_picture(24, 97, MENU_2_PAGE_ICON_UNSELECT_VERSTION_EN, spiflash_read);
+                    //						lcd_show_picture(24, 143, MENU_2_PAGE_ICON_SELECT_RESET_EN, spiflash_read);
+                    //					    lcd_show_picture(24, 190, MENU_2_PAGE_ICON_UNSELECT_SUPPORT_EN, spiflash_read);
+                    //						lcd_show_picture(78, 236, MENU_2_PAGE_ICON_UNSELECT_EXIT_EN, spiflash_read);
+                    //						break;
+                    //					case MENU_SELECT_SUPPORT:
+                    //                        lcd_show_picture(24, 50, MENU_2_PAGE_ICON_UNSELECT_COUNTDOWN_MODE_EN, spiflash_read);
+                    //						lcd_show_picture(24, 97, MENU_2_PAGE_ICON_UNSELECT_VERSTION_EN, spiflash_read);
+                    //						lcd_show_picture(24, 143, MENU_2_PAGE_ICON_UNSELECT_RESET_EN, spiflash_read);
+                    //					    lcd_show_picture(24, 190, MENU_2_PAGE_ICON_SELECT_SUPPORT_EN, spiflash_read);
+                    //						lcd_show_picture(78, 236, MENU_2_PAGE_ICON_UNSELECT_EXIT_EN, spiflash_read);
+                    //						break;
+                    //					case MENU_SELECT_EXIT_MENU:
+                    //                        lcd_show_picture(24, 50, MENU_2_PAGE_ICON_UNSELECT_COUNTDOWN_MODE_EN, spiflash_read);
+                    //						lcd_show_picture(24, 97, MENU_2_PAGE_ICON_UNSELECT_VERSTION_EN, spiflash_read);
+                    //						lcd_show_picture(24, 143, MENU_2_PAGE_ICON_UNSELECT_RESET_EN, spiflash_read);
+                    //					    lcd_show_picture(24, 190, MENU_2_PAGE_ICON_UNSELECT_SUPPORT_EN, spiflash_read);
+                    //						lcd_show_picture(78, 236, MENU_2_PAGE_ICON_SELECT_EXIT_EN, spiflash_read);
+                    //						break;
+                    //				default:
+                    //					break;
+                    //				}
+                    //   lcd_show_picture(0, 286, ICON_STATUS_BAR_BOTTOM_EN, spiflash_read);
+                }
+            }
+        }
+        /* Determine whether the settings page has been opened */
+        else if (this->page >= PAGE_SETTING_SHOW_STYLE_CN &&
+                 this->page <= PAGE_SETTING_SUPPORT_EN)
+        {
+            /* Check if the previous page is in Menu Bar 1 */
+            if (this->last_page >= PAGE_MENU_SELECT_SHOW_STYLE_CN &&
+                    this->last_page <= PAGE_MENU_UNSELECT_SPEAKER_EN)
+            {
+                /* Clear Menu Bar Option 1 */
+                // LCD_Fill(28, 47, 463, 272, BLACK);
+                /* clean menu list 1 */
+                lcd_fill(24, 50, 216, 267, BLACK);
+                /* clean mune 1 bottom  */
+                // lcd_fill(0, 286, 240, 320, BLACK);
+            }
+            /* Check if the previous page is in Menu Bar 2 */
+            else if (this->last_page >= PAGE_MENU_SELECT_VERSTION_CN &&
+                     this->last_page <= PAGE_MENU_UNSELECT_RETURN_MENU_EN)
+            {
+                /* Clear Menu Bar Option 2 */
+                /* clean menu list 2 */
+                lcd_fill(24, 50, 216, 267, BLACK);
+                /* clean exit icon */
+                lcd_fill(78, 255, 161, 284, BLACK);
+                /* clean mune 2 bottom  */
+                // lcd_fill(0, 286, 240, 320, BLACK);
+            }
+        }
+
+        if (first_in_menu_1 || first_in_menu_2)
+        {
+            first_in_menu_1 = false;
+            first_in_menu_2 = false;
+        }
+        /* If this isn't the first time you've entered the menu, clear the previously selected item. */
+        else
+        {
+            /* Before clearing the state, check whether the current page is in the menu */
+            if (this->page >= PAGE_MENU_SELECT_SHOW_STYLE_CN &&
+                    this->page <= PAGE_MENU_UNSELECT_RETURN_MENU_EN)
+            {
+                clear_selection(this->last_page);
+            }
+        }
+
+        switch (this->page)
+        {
+        case PAGE_LOGO:
+            lcd_show_picture(25, 144, ICON_LOGO, spiflash_read);
+            break;
+
+        case PAGE_CURVE:
+
+            /* show time and temp icon */
+            if (this->function.heat == HEATTING_STOP &&
+                    this->key_setting_select == SELECT_SETTING_TEMP)
+            {
+                lcd_show_picture(13, 38, CURVE_PAGE_ICON_STOP_HEATTING_WITH_UNSETTING_TIME, spiflash_read);
+                lcd_show_picture(13, 141, CURVE_PAGE_ICON_START_SETTING_TEMP, spiflash_read);
+            }
+            else if (this->function.heat == HEATTING_STOP &&
+                     this->key_setting_select == SELECT_SETTING_TIME)
+            {
+                lcd_show_picture(13, 38, CURVE_PAGE_ICON_STOP_HEATTING_WITH_SETTING_TIME, spiflash_read);
+                lcd_show_picture(13, 141, CURVE_PAGE_ICON_STOP_SETTING_TEMP, spiflash_read);
+            }
+            else if (this->function.heat == HEATTING_START &&
+                     this->key_setting_select == SELECT_SETTING_TEMP)
+            {
+                lcd_show_picture(13, 38, CURVE_PAGE_ICON_START_HEATTING_WITH_UNSETTING_TIME, spiflash_read);
+                lcd_show_picture(13, 141, CURVE_PAGE_ICON_START_SETTING_TEMP, spiflash_read);
+            }
+            else if (this->function.heat == HEATTING_START &&
+                     this->key_setting_select == SELECT_SETTING_TIME)
+            {
+                lcd_show_picture(13, 38, CURVE_PAGE_ICON_START_HEATTING_WITH_SETTING_TIME, spiflash_read);
+                lcd_show_picture(13, 141, CURVE_PAGE_ICON_STOP_SETTING_TEMP, spiflash_read);
+            }
+
+            /* shou temp unit */
+            if (this->function.unit == CELSIUS)
+            {
+                lcd_show_picture(130, 115, CURVE_PAGE_ICON_CELSIUS, spiflash_read);
+            }
+            else
+            {
+                lcd_show_picture(130, 115, CURVE_PAGE_ICON_FAHRENHEIT, spiflash_read);
+            }
+
+            /* show curve scale */
+            lcd_show_picture(10, 186, CURVE_PAGE_ICON_CURVE_SCALE, spiflash_read);
+
+            /* show channel */
+            switch (this->function.channel)
+            {
+            case SELECT_NONE:
+                lcd_show_picture(162, 38, ICON_CH1_UNSELECT, spiflash_read);
+                lcd_show_picture(162, 90, ICON_CH2_UNSELECT, spiflash_read);
+                lcd_show_picture(162, 141, ICON_CH3_UNSELECT, spiflash_read);
+                break;
+
+            case SELECT_CHANNEL_1:
+                lcd_show_picture(162, 38, ICON_CH1_SELECT, spiflash_read);
+                lcd_show_picture(162, 90, ICON_CH2_UNSELECT, spiflash_read);
+                lcd_show_picture(162, 141, ICON_CH3_UNSELECT, spiflash_read);
+                break;
+
+            case SELECT_CHANNEL_2:
+                lcd_show_picture(162, 38, ICON_CH1_UNSELECT, spiflash_read);
+                lcd_show_picture(162, 90, ICON_CH2_SELECT, spiflash_read);
+                lcd_show_picture(162, 141, ICON_CH3_UNSELECT, spiflash_read);
+                break;
+
+            case SELECT_CHANNEL_3:
+                lcd_show_picture(162, 38, ICON_CH1_UNSELECT, spiflash_read);
+                lcd_show_picture(162, 90, ICON_CH2_UNSELECT, spiflash_read);
+                lcd_show_picture(162, 141, ICON_CH3_SELECT, spiflash_read);
+                break;
+            }
+
+            break;
+
+        case PAGE_VALUE:
+
+            /* show time and temp icon */
+            if (this->function.heat == HEATTING_STOP &&
+                    this->key_setting_select == SELECT_SETTING_TEMP)
+            {
+                lcd_show_picture(13, 38, VALUE_PAGE_ICON_STOP_HEATTING_WITH_UNSETTING_TIME, spiflash_read);
+                lcd_show_picture(13, 200, VALUE_PAGE_ICON_START_SETTING_TEMP, spiflash_read);
+            }
+            else if (this->function.heat == HEATTING_STOP &&
+                     this->key_setting_select == SELECT_SETTING_TIME)
+            {
+                lcd_show_picture(13, 38, VALUE_PAGE_ICON_STOP_HEATTING_WITH_SETTING_TIME, spiflash_read);
+                lcd_show_picture(13, 200, VALUE_PAGE_ICON_STOP_SETTING_TEMP, spiflash_read);
+            }
+            else if (this->function.heat == HEATTING_START &&
+                     this->key_setting_select == SELECT_SETTING_TEMP)
+            {
+                lcd_show_picture(13, 38, VALUE_PAGE_ICON_START_HEATTING_WITH_UNSETTING_TIME, spiflash_read);
+                lcd_show_picture(13, 200, VALUE_PAGE_ICON_START_SETTING_TEMP, spiflash_read);
+            }
+            else if (this->function.heat == HEATTING_START &&
+                     this->key_setting_select == SELECT_SETTING_TIME)
+            {
+                lcd_show_picture(13, 38, VALUE_PAGE_ICON_START_HEATTING_WITH_SETTING_TIME, spiflash_read);
+                lcd_show_picture(13, 200, VALUE_PAGE_ICON_STOP_SETTING_TEMP, spiflash_read);
+            }
+
+            /* shou temp unit */
+            if (this->function.unit == CELSIUS)
+            {
+                lcd_show_picture(180, 152, VALUE_PAGE_ICON_CELSIUS, spiflash_read);
+            }
+            else
+            {
+                lcd_show_picture(180, 152, VALUE_PAGE_ICON_FAHRENHEIT, spiflash_read);
+            }
+
+            /* show channel */
+            switch (this->function.channel)
+            {
+            case SELECT_NONE:
+                lcd_show_picture(13, 271, ICON_CH1_UNSELECT, spiflash_read);
+                lcd_show_picture(88, 271, ICON_CH2_UNSELECT, spiflash_read);
+                lcd_show_picture(163, 271, ICON_CH3_UNSELECT, spiflash_read);
+                break;
+
+            case SELECT_CHANNEL_1:
+                lcd_show_picture(13, 271, ICON_CH1_SELECT, spiflash_read);
+                lcd_show_picture(88, 271, ICON_CH2_UNSELECT, spiflash_read);
+                lcd_show_picture(163, 271, ICON_CH3_UNSELECT, spiflash_read);
+                break;
+
+            case SELECT_CHANNEL_2:
+                lcd_show_picture(13, 271, ICON_CH1_UNSELECT, spiflash_read);
+                lcd_show_picture(88, 271, ICON_CH2_SELECT, spiflash_read);
+                lcd_show_picture(163, 271, ICON_CH3_UNSELECT, spiflash_read);
+                break;
+
+            case SELECT_CHANNEL_3:
+                lcd_show_picture(13, 38, ICON_CH1_UNSELECT, spiflash_read);
+                lcd_show_picture(88, 90, ICON_CH2_UNSELECT, spiflash_read);
+                lcd_show_picture(163, 141, ICON_CH3_SELECT, spiflash_read);
+                break;
+            }
+
+            break;
+
+        case PAGE_MENU_SELECT_SHOW_STYLE_CN:
+            lcd_show_picture(24, 50, MENU_1_PAGE_ICON_SELECT_SHOW_STYLE_CN, spiflash_read);
+            break;
+
+        case PAGE_MENU_SELECT_SHOW_STYLE_EN:
+            // lcd_show_picture(24, 50, MENU_1_PAGE_ICON_SELECT_SHOW_STYLE_EN, spiflash_read);
+            break;
+
+        case PAGE_MENU_SELECT_UNIT_CN:
+            lcd_show_picture(24, 97, MENU_1_PAGE_ICON_SELECT_UNIT_CN, spiflash_read);
+            break;
+
+        case PAGE_MENU_SELECT_UNIT_EN:
+            // lcd_show_picture(24, 97, MENU_1_PAGE_ICON_SELECT_UNIT_EN, spiflash_read);
+            break;
+
+        case PAGE_MENU_SELECT_CALTEMP_CN:
+            lcd_show_picture(24, 143, MENU_1_PAGE_ICON_SELECT_CALTEMP_CN, spiflash_read);
+            break;
+
+        case PAGE_MENU_SELECT_CALTEMP_EN:
+            // lcd_show_picture(24, 143, MENU_1_PAGE_ICON_SELECT_CALTEMP_EN, spiflash_read);
+            break;
+
+        case PAGE_MENU_SELECT_LANGUAGE_CN:
+            lcd_show_picture(24, 190, MENU_1_PAGE_ICON_SELECT_LANGUAGE_CN, spiflash_read);
+            break;
+
+        case PAGE_MENU_SELECT_LANGUAGE_EN:
+            // lcd_show_picture(24, 190, MENU_1_PAGE_ICON_SELECT_LANGUAGE_EN, spiflash_read);
+            break;
+
+        case PAGE_MENU_SELECT_SPEAKER_CN:
+            lcd_show_picture(24, 236, MENU_1_PAGE_ICON_SELECT_SPEAKER_CN, spiflash_read);
+            break;
+
+        case PAGE_MENU_SELECT_SPEAKER_EN:
+            // lcd_show_picture(24, 236, MENU_1_PAGE_ICON_SELECT_SPEAKER_EN, spiflash_read);
+            break;
+
+	
+		
+		
+        case PAGE_MENU_SELECT_COUNTDOWN_MODE_CN:
+            lcd_show_picture(24, 50, MENU_2_PAGE_ICON_SELECT_COUNTDOWN_MODE_CN, spiflash_read);
+            break;
+
+        case PAGE_MENU_SELECT_COUNTDOWN_MODE_EN:
+            // lcd_show_picture(24, 50, MENU_2_PAGE_ICON_SELECT_COUNTDOWN_MODE_EN, spiflash_read);
+            break;
+
+			case PAGE_MENU_SELECT_VERSTION_CN:
+            lcd_show_picture(24, 97, MENU_2_PAGE_ICON_SELECT_VERSTION_CN, spiflash_read);
+            break;
+
+        case PAGE_MENU_SELECT_VERSTION_EN:
+            // lcd_show_picture(24, 91, MENU_2_PAGE_ICON_SELECT_VERSTION_EN, spiflash_read);
+            break;
+		
+		
+        case PAGE_MENU_SELECT_RESET_CN:
+            lcd_show_picture(24, 143, MENU_2_PAGE_ICON_SELECT_RESET_CN, spiflash_read);
+            break;
+
+        case PAGE_MENU_SELECT_RESET_EN:
+            // lcd_show_picture(24, 143, MENU_2_PAGE_ICON_SELECT_RESET_EN, spiflash_read);
+            break;
+
+        case PAGE_MENU_SELECT_SUPPORT_CN:
+            lcd_show_picture(24, 190, MENU_2_PAGE_ICON_SELECT_SUPPORT_CN, spiflash_read);
+            break;
+
+        case PAGE_MENU_SELECT_SUPPORT_EN:
+            // lcd_show_picture(24, 190, MENU_2_PAGE_ICON_SELECT_SUPPORT_EN, spiflash_read);
+            break;
+
+        case PAGE_MENU_SELECT_RETURN_MENU_CN:
+            lcd_show_picture(78, 236, MENU_2_PAGE_ICON_SELECT_EXIT_CN, spiflash_read);
+            break;
+
+        case PAGE_MENU_SELECT_RETURN_MENU_EN:
+            // lcd_show_picture(78, 236, MENU_2_PAGE_ICON_SELECT_EXIT_EN, spiflash_read);
+            break;
+
+        case PAGE_SETTING_SHOW_STYLE_CN:
+            lcd_show_picture(24, 87, SETTING_PAGE_ICON_SHOW_STYLE_CN, spiflash_read);
+
+            if (this->function.show == SHOW_CURVE)
+            {
+                lcd_show_picture(177, 142, SETTING_PAGE_ICON_SELECT_OPTION, spiflash_read);
+                lcd_show_picture(177, 176, SETTING_PAGE_ICON_UNSELECT_OPTION, spiflash_read);
+            }
+            else if (this->function.show == SHOW_VALUE)
+            {
+                lcd_show_picture(177, 142, SETTING_PAGE_ICON_UNSELECT_OPTION, spiflash_read);
+                lcd_show_picture(177, 176, SETTING_PAGE_ICON_SELECT_OPTION, spiflash_read);
+            }
+
+            break;
+
+        case PAGE_SETTING_SHOW_STYLE_EN:
+
+            // lcd_show_picture(24, 87, SETTING_PAGE_ICON_SHOW_STYLE_EN, spiflash_read);
+            if (this->function.show == SHOW_CURVE)
+            {
+                lcd_show_picture(177, 142, SETTING_PAGE_ICON_SELECT_OPTION, spiflash_read);
+                lcd_show_picture(177, 176, SETTING_PAGE_ICON_UNSELECT_OPTION, spiflash_read);
+            }
+            else if (this->function.show == SHOW_VALUE)
+            {
+                lcd_show_picture(177, 142, SETTING_PAGE_ICON_UNSELECT_OPTION, spiflash_read);
+                lcd_show_picture(177, 176, SETTING_PAGE_ICON_SELECT_OPTION, spiflash_read);
+            }
+
+            break;
+
+        case PAGE_SETTING_UNIT_CN:
+            lcd_show_picture(24, 87, SETTING_PAGE_ICON_UNIT_CN, spiflash_read);
+
+            if (this->function.unit == FAHRENHEIT)
+            {
+                lcd_show_picture(177, 142, SETTING_PAGE_ICON_SELECT_OPTION, spiflash_read);
+                lcd_show_picture(177, 176, SETTING_PAGE_ICON_UNSELECT_OPTION, spiflash_read);
+            }
+            else if (this->function.unit == CELSIUS)
+            {
+                lcd_show_picture(177, 142, SETTING_PAGE_ICON_UNSELECT_OPTION, spiflash_read);
+                lcd_show_picture(177, 176, SETTING_PAGE_ICON_SELECT_OPTION, spiflash_read);
+            }
+
+            break;
+
+        case PAGE_SETTING_UNIT_EN:
+
+            // lcd_show_picture(24, 87, SETTING_PAGE_ICON_UNIT_EN, spiflash_read);
+            if (this->function.unit == FAHRENHEIT)
+            {
+                lcd_show_picture(177, 142, SETTING_PAGE_ICON_SELECT_OPTION, spiflash_read);
+                lcd_show_picture(177, 176, SETTING_PAGE_ICON_UNSELECT_OPTION, spiflash_read);
+            }
+            else if (this->function.unit == CELSIUS)
+            {
+                lcd_show_picture(177, 142, SETTING_PAGE_ICON_UNSELECT_OPTION, spiflash_read);
+                lcd_show_picture(177, 176, SETTING_PAGE_ICON_SELECT_OPTION, spiflash_read);
+            }
+
+            break;
+
+        case PAGE_SETTING_CALTEMP_CN:
+            lcd_show_picture(24, 87, SETTING_PAGE_ICON_CALTEMP_CN, spiflash_read);
+
+            if (this->function.unit == CELSIUS)
+            {
+                lcd_show_picture(182, 140, SETTING_PAGE_ICON_CALTEMP_CELSIUS, spiflash_read);
+                lcd_show_picture(182, 180, SETTING_PAGE_ICON_CALTEMP_CELSIUS, spiflash_read);
+            }
+            else if (this->function.unit == FAHRENHEIT)
+            {
+                lcd_show_picture(182, 140, SETTING_PAGE_ICON_CALTEMP_FAHRENHEIT, spiflash_read);
+                lcd_show_picture(182, 180, SETTING_PAGE_ICON_CALTEMP_FAHRENHEIT, spiflash_read);
+            }
+
+            break;
+
+        case PAGE_SETTING_CALTEMP_EN:
+
+            // lcd_show_picture(24, 87, SETTING_PAGE_ICON_CALTEMP_EN, spiflash_read);
+            if (this->function.unit == CELSIUS)
+            {
+                lcd_show_picture(180, 140, SETTING_PAGE_ICON_CALTEMP_CELSIUS, spiflash_read);
+            }
+            else if (this->function.unit == FAHRENHEIT)
+            {
+                lcd_show_picture(180, 140, SETTING_PAGE_ICON_CALTEMP_FAHRENHEIT, spiflash_read);
+            }
+
+            break;
+
+        case PAGE_SETTING_CN:
+            lcd_show_picture(18, 118, SETTING_PAGE_ICON_LANGUAGE_CN, spiflash_read);
+            break;
+
+        case PAGE_SETTING_EN:
+            lcd_show_picture(18, 118, SETTING_PAGE_ICON_LANGUAGE_EN, spiflash_read);
+            break;
+
+        case PAGE_SETTING_SPEAKER_CN:
+            lcd_show_picture(24, 87, SETTING_PAGE_ICON_SPEAKER_CN, spiflash_read);
+
+            if (this->function.speaker == ON)
+            {
+                lcd_show_picture(177, 142, SETTING_PAGE_ICON_SELECT_OPTION, spiflash_read);
+                lcd_show_picture(177, 176, SETTING_PAGE_ICON_UNSELECT_OPTION, spiflash_read);
+            }
+            else if (this->function.speaker == OFF)
+            {
+                lcd_show_picture(177, 142, SETTING_PAGE_ICON_UNSELECT_OPTION, spiflash_read);
+                lcd_show_picture(177, 176, SETTING_PAGE_ICON_SELECT_OPTION, spiflash_read);
+            }
+
+            break;
+
+        case PAGE_SETTING_SPEAKER_EN:
+
+            // lcd_show_picture(24, 87, SETTING_PAGE_ICON_SPEAKER_EN, spiflash_read);
+            if (this->function.speaker == ON)
+            {
+                lcd_show_picture(177, 142, SETTING_PAGE_ICON_SELECT_OPTION, spiflash_read);
+                lcd_show_picture(177, 176, SETTING_PAGE_ICON_UNSELECT_OPTION, spiflash_read);
+            }
+            else if (this->function.speaker == OFF)
+            {
+                lcd_show_picture(177, 142, SETTING_PAGE_ICON_UNSELECT_OPTION, spiflash_read);
+                lcd_show_picture(177, 176, SETTING_PAGE_ICON_SELECT_OPTION, spiflash_read);
+            }
+
+            break;
+
+        case PAGE_SETTING_COUNTDOWN_MODE_CN:
+            if (this->function.countdown == BEEP_SOUDS)
+            {
+                lcd_show_picture(177, 142, SETTING_PAGE_ICON_SELECT_OPTION, spiflash_read);
+                lcd_show_picture(177, 176, SETTING_PAGE_ICON_UNSELECT_OPTION, spiflash_read);
+            }
+            else if (this->function.countdown == BEEP_SOUDS_AND_HEATING_STOP)
+            {
+                lcd_show_picture(177, 142, SETTING_PAGE_ICON_UNSELECT_OPTION, spiflash_read);
+                lcd_show_picture(177, 176, SETTING_PAGE_ICON_SELECT_OPTION, spiflash_read);
+            }
+
+            break;
+
+        case PAGE_SETTING_COUNTDOWN_MODE_EN:
+            if (this->function.countdown == BEEP_SOUDS)
+            {
+                //lcd_show_picture(24, 87, SETTING_PAGE_ICON_COUNTDOWN_MODE_EN, spiflash_read);
+                lcd_show_picture(177, 176, SETTING_PAGE_ICON_UNSELECT_OPTION, spiflash_read);
+            }
+            else if (this->function.countdown == BEEP_SOUDS_AND_HEATING_STOP)
+            {
+                //lcd_show_picture(24, 87, SETTING_PAGE_ICON_COUNTDOWN_MODE_EN, spiflash_read);
+                lcd_show_picture(177, 176, SETTING_PAGE_ICON_SELECT_OPTION, spiflash_read);
+            }
+
+            break;
+
+        case PAGE_SETTING_VERSTION_CN:
+            lcd_show_picture(24, 87, SETTING_PAGE_ICON_VERSTION_CN, spiflash_read);
+            lcd_show_string(126, 135, SOFTWARE_VERSTION, WHITE, 0x2124, 24, 0);
+            lcd_show_string(126, 175, HARDWARE_VERSTION, WHITE, 0x2124, 24, 0);
+            break;
+
+        case PAGE_SETTING_VERSTION_EN:
+            // lcd_show_picture(24, 87, SETTING_PAGE_ICON_VERSTION_EN, spiflash_read);
+            lcd_show_string(126, 135, SOFTWARE_VERSTION, WHITE, 0x2124, 24, 0);
+            lcd_show_string(126, 175, HARDWARE_VERSTION, WHITE, 0x2124, 24, 0);
+            break;
+
+        case PAGE_SETTING_UNSELECT_RESET_CN:
+            last_language = this->function.language;
+            lcd_show_picture(24, 62, SETTING_PAGE_ICON_RESET_UNSELECT_CN, spiflash_read);
+            lcd_show_picture(78, 259, SETTING_PAGE_ICON_RESET_BACK_SELECT_CN, spiflash_read);
+            break;
+
+        case PAGE_SETTING_UNSELECT_RESET_EN:
+            last_language = this->function.language;
+            // lcd_show_picture(24, 62, SETTING_PAGE_ICON_RESET_UNSELECT_EN, spiflash_read);
+            // lcd_show_picture(78, 259, SETTING_PAGE_ICON_RESET_BACK_SELECT_EN, spiflash_read);
+            break;
+
+        case PAGE_SETTING_SELECT_RESET_CN:
+            lcd_show_picture(24, 62, SETTING_PAGE_ICON_RESET_SELECT_CN, spiflash_read);
+            lcd_show_picture(78, 259, SETTING_PAGE_ICON_RESET_BACK_UNSELECT_CN, spiflash_read);
+            break;
+
+        case PAGE_SETTING_SELECT_RESET_EN:
+            // lcd_show_picture(24, 62, SETTING_PAGE_ICON_RESET_SELECT_EN, spiflash_read);
+            // lcd_show_picture(78, 259, SETTING_PAGE_ICON_RESET_BACK_UNSELECT_EN, spiflash_read);
+            break;
+
+        case PAGE_SETTING_RESET_DONE_CN:
+            lcd_show_picture(24, 62, SETTING_PAGE_ICON_RESET_DONE_CN, spiflash_read);
+            lcd_show_picture(78, 259, SETTING_PAGE_ICON_RESET_BACK_UNSELECT_CN, spiflash_read);
+            break;
+
+        case PAGE_SETTING_RESET_DONE_EN:
+            // lcd_show_picture(24, 62, SETTING_PAGE_ICON_RESET_DONE_EN, spiflash_read);
+            // lcd_show_picture(78, 259, SETTING_PAGE_ICON_RESET_BACK_UNSELECT_EN, spiflash_read);
+            break;
+
+        case PAGE_SETTING_SUPPORT_CN:
+            lcd_show_picture(14, 62, SETTING_PAGE_ICON_SUPPORT_CN, spiflash_read);
+            break;
+
+        case PAGE_SETTING_SUPPORT_EN:
+            // lcd_show_picture(14, 62, SETTING_PAGE_ICON_SUPPORT_EN, spiflash_read);
+            break;
+
+        default:
+            break;
+        }
+
+        this->last_page = this->page;
+    }
+
+    if (this->reset_flag == true)
+    {
+        if (show_reset_time == 400)
+        {
+            if (last_language == EN)
+            {
+                this->page = PAGE_SETTING_RESET_DONE_EN;
+            }
+            else if (last_language == CN)
+            {
+                this->page = PAGE_SETTING_RESET_DONE_CN;
+            }
+        }
+
+        show_reset_time--;
+
+        if (show_reset_time <= 0)
+        {
+            show_reset_time = 400;
+            this->reset_flag = false;
+            this->page = PAGE_MENU_SELECT_RESET_CN;
+        }
+    }
+}
+
+static void show_other(CZ01_t *this)
+{
+    static Function_t last_function;
+    static bool first_in_cal_page = true;
+    static int16_t last_show_cal_temp = 0;
+    static int16_t setting_cal_temp_time = 0;
+
+    if (this->page == PAGE_SETTING_SHOW_STYLE_CN ||
+            this->page == PAGE_SETTING_SHOW_STYLE_EN)
+    {
+        if (last_function.show != this->function.show)
+        {
+            if (this->function.show == SHOW_CURVE)
+            {
+                lcd_show_picture(177, 142, SETTING_PAGE_ICON_SELECT_OPTION, spiflash_read);
+                lcd_show_picture(177, 176, SETTING_PAGE_ICON_UNSELECT_OPTION, spiflash_read);
+            }
+            else if (this->function.show == SHOW_VALUE)
+            {
+                lcd_show_picture(177, 142, SETTING_PAGE_ICON_UNSELECT_OPTION, spiflash_read);
+                lcd_show_picture(177, 176, SETTING_PAGE_ICON_SELECT_OPTION, spiflash_read);
+            }
+
+            last_function.show = this->function.show;
+        }
+    }
+    else if (this->page == PAGE_SETTING_UNIT_CN ||
+             this->page == PAGE_SETTING_UNIT_EN)
+    {
+        if (last_function.unit != this->function.unit)
+        {
+            if (this->function.unit == FAHRENHEIT)
+            {
+                lcd_show_picture(177, 142, SETTING_PAGE_ICON_SELECT_OPTION, spiflash_read);
+                lcd_show_picture(177, 176, SETTING_PAGE_ICON_UNSELECT_OPTION, spiflash_read);
+            }
+            else if (this->function.unit == CELSIUS)
+            {
+                lcd_show_picture(177, 142, SETTING_PAGE_ICON_UNSELECT_OPTION, spiflash_read);
+                lcd_show_picture(177, 176, SETTING_PAGE_ICON_SELECT_OPTION, spiflash_read);
+            }
+
+            last_function.unit = this->function.unit;
+        }
+    }
+	else if (this->page == PAGE_SETTING_COUNTDOWN_MODE_CN ||
+             this->page == PAGE_SETTING_COUNTDOWN_MODE_EN)
+			 {
+			     if(last_function.countdown != this->function.countdown)
+				 {
+				                 if (this->function.countdown == BEEP_SOUDS)
+            {
+                lcd_show_picture(177, 142, SETTING_PAGE_ICON_SELECT_OPTION, spiflash_read);
+                lcd_show_picture(177, 176, SETTING_PAGE_ICON_UNSELECT_OPTION, spiflash_read);
+            }
+            else if (this->function.countdown == BEEP_SOUDS_AND_HEATING_STOP)
+            {
+                lcd_show_picture(177, 142, SETTING_PAGE_ICON_UNSELECT_OPTION, spiflash_read);
+                lcd_show_picture(177, 176, SETTING_PAGE_ICON_SELECT_OPTION, spiflash_read);
+            }
+
+            last_function.countdown = this->function.countdown;
+				 }
+			 }
+
+    if ((this->page == PAGE_SETTING_SPEAKER_CN ||
+            this->page == PAGE_SETTING_SPEAKER_EN) ||
+            last_function.speaker != this->function.speaker)
+    {
+        if (last_function.speaker != this->function.speaker)
+        {
+            if (this->function.speaker == ON)
+            {
+                lcd_show_picture(215, 8, ICON_VOLUME_ON, spiflash_read);
+
+                if (this->page != PAGE_SETTING_SPEAKER_CN ||
+                        this->page != PAGE_SETTING_SPEAKER_CN)
+                {
+                    goto exit;
+                }
+
+                lcd_show_picture(177, 142, SETTING_PAGE_ICON_SELECT_OPTION, spiflash_read);
+                lcd_show_picture(177, 176, SETTING_PAGE_ICON_UNSELECT_OPTION, spiflash_read);
+            }
+            else if (this->function.speaker == OFF)
+            {
+                lcd_show_picture(215, 8, ICON_VOLUME_OFF, spiflash_read);
+
+                if (this->page != PAGE_SETTING_SPEAKER_CN ||
+                        this->page != PAGE_SETTING_SPEAKER_CN)
+                {
+                    goto exit;
+                }
+
+                lcd_show_picture(177, 142, SETTING_PAGE_ICON_UNSELECT_OPTION, spiflash_read);
+                lcd_show_picture(177, 176, SETTING_PAGE_ICON_SELECT_OPTION, spiflash_read);
+            }
+			
+exit:
+            last_function.speaker = this->function.speaker;
+        }
+    }
+ 
+	    
+
+    /* show cal temp */
+    if (this->page == PAGE_SETTING_CALTEMP_CN ||
+            this->page == PAGE_SETTING_CALTEMP_EN)
+    {
+        if (this->function.unit == CELSIUS)
+        {
+            if (first_in_cal_page)
+            {
+                lcd_show_int(148, 136, this->show_set_temp, 3, 1, WHITE, 0x2124, 24);
+                this->show_cal_temp_c = this->show_set_temp;
+                lcd_show_int(148, 175, this->show_cal_temp_c, 3, 1, WHITE, 0x2124, 24);
+                last_show_cal_temp = this->show_cal_temp_c;
+                first_in_cal_page = false;
+            }
+
+            if (last_show_cal_temp != this->show_cal_temp_c)
+            {
+                setting_cal_temp_time = 155;
+                lcd_show_int(148, 175, this->show_cal_temp_c, 3, 1, GREEN, 0x2124, 24);
+                last_show_cal_temp = this->show_cal_temp_c;
+            }
+
+            if (setting_cal_temp_time)
+            {
+                setting_cal_temp_time--;
+
+                if (setting_cal_temp_time < 1)
+                {
+                    this->cal_temp += this->show_set_temp - this->show_cal_temp_c;
+
+                    if (this->cal_temp > 100)
+                    {
+                        this->cal_temp = 100;
+                    }
+
+                    if (this->cal_temp < -100)
+                    {
+                        this->cal_temp = -100;
+                    }
+
+                    this->show_cal_temp_c = this->show_set_temp;
+                    last_show_cal_temp = this->show_set_temp;
+                    lcd_show_int(148, 175, this->show_set_temp, 3, 1, WHITE, 0x2124, 24);
+                }
+            }
+        }
+        else if (this->function.unit == FAHRENHEIT)
+        {
+            if (first_in_cal_page)
+            {
+                lcd_show_int(148, 136, this->show_set_temp, 3, 1, WHITE, 0x2124, 24);
+                this->show_cal_temp_f = this->show_set_temp;
+                lcd_show_int(148, 175, this->show_cal_temp_f, 3, 1, WHITE, 0x2124, 24);
+                last_show_cal_temp = this->show_cal_temp_f;
+                first_in_cal_page = false;
+            }
+
+            if (last_show_cal_temp != this->show_cal_temp_f)
+            {
+                setting_cal_temp_time = 155;
+                lcd_show_int(148, 175, this->show_cal_temp_f, 3, 1, GREEN, 0x2124, 24);
+                last_show_cal_temp = this->show_cal_temp_f;
+            }
+
+            if (setting_cal_temp_time)
+            {
+                setting_cal_temp_time--;
+
+                if (setting_cal_temp_time < 1)
+                {
+                    this->cal_temp += ((this->show_set_temp - 32) * 5 / 9) - ((this->show_cal_temp_f - 32) * 5 / 9);
+
+                    if (this->cal_temp > 100)
+                    {
+                        this->cal_temp = 100;
+                    }
+
+                    if (this->cal_temp < -100)
+                    {
+                        this->cal_temp = -100;
+                    }
+
+                    this->show_cal_temp_f = this->show_set_temp;
+                    last_show_cal_temp = this->show_set_temp;
+                    lcd_show_int(148, 175, this->show_set_temp, 3, 1, WHITE, 0x2124, 24);
+                }
+            }
+        }
+    }
+    else
+    {
+        first_in_cal_page = true;
+
+        if (setting_cal_temp_time)
+        {
+            setting_cal_temp_time = 0;
+
+            if (this->function.unit == CELSIUS)
+            {
+                this->cal_temp += this->show_set_temp - this->show_cal_temp_c;
+            }
+            else if (this->function.unit == FAHRENHEIT)
+            {
+                this->cal_temp += ((this->show_set_temp - 32) * 5 / 9) - ((this->show_cal_temp_f - 32) * 5 / 9);
+            }
+
+            if (this->cal_temp > 100)
+            {
+                this->cal_temp = 100;
+            }
+
+            if (this->cal_temp < -100)
+            {
+                this->cal_temp = -100;
+            }
+        }
+    }
+}
+
+static void get_data_to_show(CZ01_t *this)
+{
+    if (this->page == PAGE_CURVE ||
+            this->page == PAGE_VALUE)
+    {
+        return;
+    }
+
+    if (this->function.unit == CELSIUS)
+    {
+        this->show_actual_temp = this->actual_temp_c - this->cal_temp;
+
+        if (scz01.show_actual_temp <= scz01.mcu_temp_c)
+        {
+            this->show_actual_temp = scz01.mcu_temp_c;
+        }
+
+        this->show_set_temp = this->set_temp_c;
+    }
+    else
+    {
+        this->show_actual_temp = this->actual_temp_f - (9 * this->cal_temp / 5 + 32);
+
+        if (scz01.show_actual_temp <= scz01.mcu_temp_f)
+        {
+            scz01.show_actual_temp = scz01.mcu_temp_f;
+        }
+
+        this->show_set_temp = this->set_temp_f;
+    }
+}
+
+void ui_handle(void)
+{
+    // ui_stats_frame(); /* global monitor: count this UI cycle as one frame */
+    show_menu(&scz01);
+    show_curve_page(&scz01);
+    show_value_page(&scz01);
+    show_other(&scz01);
+    get_data_to_show(&scz01);
+    // ui_stats_update(); /* global monitor: self-throttled FPS/CPU readout */
+}

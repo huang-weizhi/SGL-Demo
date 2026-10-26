@@ -1,0 +1,16 @@
+﻿==== old  set=240  k=0.41  C=400  Pmax=300 ====
+max sensor temp = 245.9 degC at 9.1 min   (overshoot 5.9 degC)
+final temp = 243.7 degC,  final duty = 0 %,  i_term = 0
+
+t_min     T duty   i
+-----     - ----   -
+    2  77.3   70   0
+    4 130.5   70   0
+    6 177.6   70   0
+    8 223.7   82 800
+   10 237.1   42 418
+   15 238.8    0   0
+   20 240.6    0   0
+
+
+

@@ -1,0 +1,61 @@
+﻿{
+    
+}
+
+/* Actual-temperature waveform: inclusive area (40,190)..(225,310). */
+#define CURVE_WAVE_X              40U
+#define CURVE_WAVE_Y              190U
+#define CURVE_WAVE_WIDTH          186U
+#define CURVE_WAVE_HEIGHT         121U
+#define CURVE_WAVE_MIN            50
+#define CURVE_WAVE_MAX            300
+#define CURVE_WAVE_SAMPLE_MS      150U
+
+/* Sample once per interval; newest data enters at the right edge.
+ * Call on every UI cycle, including inactive pages, to detect page re-entry. */
+static void show_temp_wave_in_page_curve(const CZ01_t *this)
+{
+    static bool active = false;
+    static TickType_t last_sample_tick = 0;
+    TickType_t now = xTaskGetTickCount();
+    TickType_t period = pdMS_TO_TICKS(CURVE_WAVE_SAMPLE_MS);
+
+    if (this->page != PAGE_CURVE)
+    {
+        active = false;
+        return;
+    }
+
+    if (!active)
+    {
+        wave_init(CURVE_WAVE_X, CURVE_WAVE_Y,
+                  CURVE_WAVE_WIDTH, CURVE_WAVE_HEIGHT);
+        /* Keep the specified range in both live and lookup mapping modes. */
+        wave_auto_range(false);
+        wave_set_range(CURVE_WAVE_MIN, CURVE_WAVE_MAX);
+        wave_clear();
+        active = true;
+    }
+    else if ((TickType_t)(now - last_sample_tick) < period)
+    {
+        return;
+    }
+
+    /* Do not invent historical samples if the UI task was delayed. */
+    last_sample_tick = now;
+    wave_push_sample(this->actual_temp);
+    wave_refresh();
+}
+
+void show_curve_page(CZ01_t *this)
+{
+    static uint32_t last_refresh_tick = 0;
+    uint32_t now;
+     
+
+    /* Service inactive pages too, so the waveform can reset on re-entry. */
+    show_temp_wave_in_page_curve(this);
+
+    if (this->page != PAGE_CURVE)
+    {
+        return;
