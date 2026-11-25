@@ -1,0 +1,17 @@
+*** Using Compiler 'V6.22', folder: 'D:\Work Program\Keil_v5\ARM\ARMCLANG\Bin'
+Build target 'AT32F415CBT7_WorkBench'
+compiling event.c...
+../sgl_ui/event.c(10): error: call to undeclared function 'ui_screen_load'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+   10 |     ui_screen_load(UI_SCREEN1);
+      |     ^
+../sgl_ui/event.c(10): note: did you mean 'sgl_screen_load'?
+../sgl/source/include\sgl_core.h(1682): note: 'sgl_screen_load' declared here
+ 1682 | void sgl_screen_load(sgl_obj_t *obj);
+      |      ^
+../sgl_ui/event.c(29): error: call to undeclared function 'ui_screen_load'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+   29 |     ui_screen_load(UI_SCREEN0);
+      |     ^
+2 errors generated.
+".\objects\AT32F415CBT7_WorkBench.axf" - 2 Error(s), 0 Warning(s).
+Target not created.
+Build Time Elapsed:  00:00:01

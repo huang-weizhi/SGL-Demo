@@ -32,6 +32,7 @@
 #include "wk_spi.h"
 #include "wk_tmr.h"
 #include "wk_usart.h"
+#include "wk_wdt.h"
 #include "wk_dma.h"
 #include "wk_gpio.h"
 #include "wk_system.h"
@@ -127,7 +128,7 @@ int main(void)
                         (uint32_t)&ADC1->odt, 
                         DMA1_CHANNEL1_MEMORY_BASE_ADDR, 
                         DMA1_CHANNEL1_BUFFER_SIZE);
-  dma_channel_enable(DMA1_CHANNEL1, FALSE);
+  dma_channel_enable(DMA1_CHANNEL1, TRUE);
 
   /* init dma1 channel2 */
   wk_dma1_channel2_init();
@@ -190,6 +191,9 @@ int main(void)
   /* init tmr2 function. */
   wk_tmr2_init();
 
+  /* init wdt function. */
+  wk_wdt_init();
+
   /* add user code begin 2 */
    wk_delay_ms(100);
    /* add user code end 2 */
@@ -201,7 +205,7 @@ int main(void)
   {
     /* add user code begin 3 */
 
-      /* add user code end 3 */
+    /* add user code end 3 */
   }
 }
 

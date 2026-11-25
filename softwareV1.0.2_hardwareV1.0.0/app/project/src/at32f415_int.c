@@ -190,6 +190,8 @@ extern void xPortSysTickHandler(void);
 void SysTick_Handler(void)
 {
   /* add user code begin SysTick_IRQ 0 */
+ 
+  sgl_tick_sync(xTaskGetTickCount());  
 
   /* add user code end SysTick_IRQ 0 */
 

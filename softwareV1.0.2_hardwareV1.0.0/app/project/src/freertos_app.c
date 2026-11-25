@@ -12,6 +12,8 @@
 /* private includes ----------------------------------------------------------*/
 /* add user code begin private includes */
 #include "wk_adc.h"
+#include "inf_sgl_port.h"
+#include "ui.h"
 /* add user code end private includes */
 
 /* private typedef -----------------------------------------------------------*/
@@ -54,34 +56,21 @@ TaskHandle_t wdt_task_handle;
 
 /* Idle task control block and stack */
 static StackType_t idle_task_stack[configMINIMAL_STACK_SIZE];
-static StackType_t timer_task_stack[configTIMER_TASK_STACK_DEPTH];
 
 static StaticTask_t idle_task_tcb;
-static StaticTask_t timer_task_tcb;
 
 /* External Idle and Timer task static memory allocation functions */
-extern void vApplicationGetIdleTaskMemory( StaticTask_t ** ppxIdleTaskTCBBuffer, StackType_t ** ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize );
-extern void vApplicationGetTimerTaskMemory( StaticTask_t ** ppxTimerTaskTCBBuffer, StackType_t ** ppxTimerTaskStackBuffer, uint32_t * pulTimerTaskStackSize );
+extern void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffer, StackType_t **ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize);
 
 /*
   vApplicationGetIdleTaskMemory gets called when configSUPPORT_STATIC_ALLOCATION
   equals to 1 and is required for static memory allocation support.
 */
-void vApplicationGetIdleTaskMemory( StaticTask_t ** ppxIdleTaskTCBBuffer, StackType_t ** ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize )
+void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffer, StackType_t **ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize)
 {
   *ppxIdleTaskTCBBuffer = &idle_task_tcb;
   *ppxIdleTaskStackBuffer = &idle_task_stack[0];
   *pulIdleTaskStackSize = (uint32_t)configMINIMAL_STACK_SIZE;
-}
-/*
-  vApplicationGetTimerTaskMemory gets called when configSUPPORT_STATIC_ALLOCATION
-  equals to 1 and is required for static memory allocation support.
-*/
-void vApplicationGetTimerTaskMemory( StaticTask_t ** ppxTimerTaskTCBBuffer, StackType_t ** ppxTimerTaskStackBuffer, uint32_t * pulTimerTaskStackSize )
-{
-  *ppxTimerTaskTCBBuffer = &timer_task_tcb;
-  *ppxTimerTaskStackBuffer = &timer_task_stack[0];
-  *pulTimerTaskStackSize = (uint32_t)configTIMER_TASK_STACK_DEPTH;
 }
 
 /* add user code begin 1 */
@@ -89,10 +78,10 @@ void vApplicationGetTimerTaskMemory( StaticTask_t ** ppxTimerTaskTCBBuffer, Stac
 /* add user code end 1 */
 
 /**
-  * @brief  initializes all task.
-  * @param  none
-  * @retval none
-  */
+ * @brief  initializes all task.
+ * @param  none
+ * @retval none
+ */
 void freertos_task_create(void)
 {
   /* create input_task task */
@@ -106,7 +95,7 @@ void freertos_task_create(void)
   /* create output_task task */
   xTaskCreate(output_func,
               "output_task",
-              128,
+              512,
               NULL,
               0,
               &output_task_handle);
@@ -129,23 +118,21 @@ void freertos_task_create(void)
 }
 
 /**
-  * @brief  freertos init and begin run.
-  * @param  none
-  * @retval none
-  */
+ * @brief  freertos init and begin run.
+ * @param  none
+ * @retval none
+ */
 void wk_freertos_init(void)
 {
   /* add user code begin freertos_init 0 */
-
   /* add user code end freertos_init 0 */
 
   /* enter critical */
   taskENTER_CRITICAL();
 
   freertos_task_create();
-	
-  /* add user code begin freertos_init 1 */
 
+  /* add user code begin freertos_init 1 */
   /* add user code end freertos_init 1 */
 
   /* exit critical */
@@ -156,10 +143,10 @@ void wk_freertos_init(void)
 }
 
 /**
-  * @brief input_task function.
-  * @param  none
-  * @retval none
-  */
+ * @brief input_task function.
+ * @param  none
+ * @retval none
+ */
 void input_func(void *pvParameters)
 {
   /* add user code begin input_func 0 */
@@ -171,7 +158,6 @@ void input_func(void *pvParameters)
   tmr_counter_enable(TMR3, FALSE);
   vTaskDelay(2);                    /* let any in-flight conversion finish */
   adc_dma_mode_enable(ADC1, FALSE); /* clears a stale ADC->DMA request line */
-
   wk_dma_channel_config(DMA1_CHANNEL1,
                         (uint32_t)&ADC1->odt,
                         DMA1_CHANNEL1_MEMORY_BASE_ADDR,
@@ -207,35 +193,36 @@ void input_func(void *pvParameters)
   /* add user code end input_func 2 */
 
   /* Infinite loop */
-  while(1)
+  while (1)
   {
-  /* add user code begin input_func 1 */
-	task_life_signs[TASK_INPUT_IDX]++;
+    /* add user code begin input_func 1 */
+    task_life_signs[TASK_INPUT_IDX]++;
     input_handle(&scz01);
     vTaskDelay(20);
     /* add user code end input_func 1 */
   }
 }
 
-
 /**
-  * @brief output_task function.
-  * @param  none
-  * @retval none
-  */
+ * @brief output_task function.
+ * @param  none
+ * @retval none
+ */
 void output_func(void *pvParameters)
 {
   /* add user code begin output_func 0 */
-	
-	
   lcd_init();
-  PID_Init(&handle_pid,30,1,65,MAX_PWM_OUT);     /* pwm = 2hz ,3S output once no over temp but very slow */
-
+  PID_Init(&handle_pid, 30, 1, 65, MAX_PWM_OUT);
+  sgl_port_init();
+  sgl_init();
+  ui_init();
+  ui_input_init();
+  // sgl_bench_start();                 /* benchmark HUD: measures render + flush cost */
   /* add user code end output_func 0 */
 
   /* add user code begin output_func 2 */
   /* show logo */
-  lcd_show_picture(25, 144, 0, spiflash_read);
+  // lcd_show_picture(25, 144, 0, spiflash_read);
   /* open lcd bl */
   lcd_port_backlight(1);
   /* delay 1.5 S */
@@ -244,23 +231,29 @@ void output_func(void *pvParameters)
   /* add user code end output_func 2 */
 
   /* Infinite loop */
-  while(1)
+  while (1)
   {
-  /* add user code begin output_func 1 */
-	task_life_signs[TASK_OUTPUT_IDX]++;
-    output_handle(&scz01);
+    /* add user code begin output_func 1 */
+    task_life_signs[TASK_OUTPUT_IDX]++;
+    // output_handle(&scz01);
     ui_handle();
-    vTaskDelay(20);
+    // sgl_bench_loop();
+    // sgl_bench_frame_begin();
+    // sgl_bench_frame_end();     /* wraps task_handler */
+    sgl_task_handler();
+    ui_key_poll();
+    sgl_port_flush_finish(); /* release CS + return last FB after the final DMA */
+    vTaskDelay(pdMS_TO_TICKS(2));
+
     /* add user code end output_func 1 */
   }
 }
 
-
 /**
-  * @brief common_task function.
-  * @param  none
-  * @retval none
-  */
+ * @brief common_task function.
+ * @param  none
+ * @retval none
+ */
 void common_func(void *pvParameters)
 {
   /* add user code begin common_func 0 */
@@ -275,43 +268,43 @@ void common_func(void *pvParameters)
   /* add user code end common_func 2 */
 
   /* Infinite loop */
-  while(1)
+  while (1)
   {
-  /* add user code begin common_func 1 */
-	task_life_signs[TASK_COMMON_IDX]++;
+    /* add user code begin common_func 1 */
+    task_life_signs[TASK_COMMON_IDX]++;
     pc_handle();
     iap_command_handle();
     flash_save();
     vTaskDelay(5);
-
     /* add user code end common_func 1 */
   }
 }
 
-
 /**
-  * @brief wdt_task function.
-  * @param  none
-  * @retval none
-  */
+ * @brief wdt_task function.
+ * @param  none
+ * @retval none
+ */
 void wdt_function(void *pvParameters)
 {
   /* add user code begin wdt_function 0 */
   uint32_t last_signs[4] = {0};
+
   while (!scz01.init_flag)
   {
     vTaskDelay(2000);
   }
+
   /* add user code end wdt_function 0 */
 
   /* add user code begin wdt_function 2 */
-   wdt_enable();
+  // wdt_enable();
   /* add user code end wdt_function 2 */
 
   /* Infinite loop */
-  while(1)
+  while (1)
   {
-  /* add user code begin wdt_function 1 */
+    /* add user code begin wdt_function 1 */
     vTaskDelay(400);
     taskENTER_CRITICAL();
     int all_alive = 1;
@@ -336,12 +329,10 @@ void wdt_function(void *pvParameters)
     }
 
     taskEXIT_CRITICAL();
-  /* add user code end wdt_function 1 */
+    /* add user code end wdt_function 1 */
   }
 }
-
 
 /* add user code begin 2 */
 
 /* add user code end 2 */
-

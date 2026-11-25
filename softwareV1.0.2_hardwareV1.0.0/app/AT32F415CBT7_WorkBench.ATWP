@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Root>
     <WorkBenchVersion>
-        <Version>V1.2.06</Version>
+        <Version>V1.2.07</Version>
     </WorkBenchVersion>
     <MCUInfo>
         <MCUSerials>AT32F415</MCUSerials>
@@ -126,7 +126,9 @@
             <ParametersSub name="MCU_SRAM_SIZE" value="32768"/>
             <ParametersSub name="configCPU_CLOCK_HZ" value="144000000"/>
             <ParametersSub name="configUSE_RECURSIVE_MUTEXES" value="1"/>
-            <ParametersSub name="TOTAL_HEAP_SIZE" value="4096"/>
+            <ParametersSub name="TOTAL_HEAP_SIZE" value="5120"/>
+            <ParametersSub name="configUSE_TIMERS" value="0"/>
+            <ParametersSub name="INCLUDE_xTimerPendFunctionCall" value="0"/>
         </Parameters>
         <Tasks>
             <ParametersGroup>
@@ -143,7 +145,7 @@
             <ParametersGroup>
                 <ParametersSub name="TaskName" value="output_task"/>
                 <ParametersSub name="TaskPriority" value="0"/>
-                <ParametersSub name="TaskStackSize" value="128"/>
+                <ParametersSub name="TaskStackSize" value="256"/>
                 <ParametersSub name="TaskEntryFunction" value="output_func"/>
                 <ParametersSub name="TaskCodeGenerationOption" value="Default"/>
                 <ParametersSub name="TaskParameters" value="NULL"/>
@@ -338,7 +340,7 @@
     </PINInfo>
     <ProjectInfomation>
         <ProjectName>AT32F415CBT7_WorkBench</ProjectName>
-        <ProjectLocation>D:/Work Area/Code For WorkBench/FW_CZ01/softwareV1.0.2_hardwareV1.0.0/app</ProjectLocation>
+        <ProjectLocation>D:/Work Area/Code For Debug/SGL_Demo/softwareV1.0.2_hardwareV1.0.0/app</ProjectLocation>
         <ToolchainIDE>MDK_V5</ToolchainIDE>
         <ARMCompiler>1</ARMCompiler>
         <BackupCode>true</BackupCode>

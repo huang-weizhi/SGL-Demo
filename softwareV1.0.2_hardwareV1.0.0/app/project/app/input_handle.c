@@ -1,5 +1,5 @@
 #include "input_handle.h"
-
+#include "ui_handle.h"
 #define KEY_COUNT 5
 #define KEY_SCAN_TIME 20
 KEY_DEFINE(key_heatting, IN_KEY_SET_L_GPIO_PORT, IN_KEY_SET_L_PIN, 0);
@@ -10,6 +10,7 @@ KEY_DEFINE(key_set, IN_KEY_CH2_L_GPIO_PORT, IN_KEY_CH2_L_PIN, 0);
 
 key_obj *keys[KEY_COUNT] = {&key_heatting, &key_channel, &key_add, &key_redece, &key_set};
 key_event_t key_event[KEY_COUNT];
+
 static KEY_INPUT_EVENT KEY_HANDLE_EVENT = END_EVENT;
 
 static void get_key_events(CZ01_t *this)
@@ -22,9 +23,9 @@ static void get_key_events(CZ01_t *this)
         key_set_scan_interval(KEY_SCAN_TIME);
         key_set_timing_simple(&key_heatting, KEY_SCAN_TIME, 800, 0, 0);
         key_set_timing_simple(&key_channel, KEY_SCAN_TIME, 800, 0, 0);
-        key_set_timing_simple(&key_add, KEY_SCAN_TIME, 800, 0, 100);
-        key_set_timing_simple(&key_redece, KEY_SCAN_TIME, 800, 0, 100);
-        key_set_timing_simple(&key_set, KEY_SCAN_TIME, 800, 300, 100);
+        key_set_timing_simple(&key_add, KEY_SCAN_TIME, 800, 0, 0);
+        key_set_timing_simple(&key_redece, KEY_SCAN_TIME, 800, 0, 0);
+        key_set_timing_simple(&key_set, KEY_SCAN_TIME, 800, 0, 0);
     }
 
     for (int i = 0; i < KEY_COUNT; i++)
@@ -33,10 +34,10 @@ static void get_key_events(CZ01_t *this)
     }
 
     if (key_event[0] == KEY_NONE &&
-            key_event[1] == KEY_NONE &&
-            key_event[2] == KEY_NONE &&
-            key_event[3] == KEY_NONE &&
-            key_event[4] == KEY_NONE)
+        key_event[1] == KEY_NONE &&
+        key_event[2] == KEY_NONE &&
+        key_event[3] == KEY_NONE &&
+        key_event[4] == KEY_NONE)
     {
         if (this->key_setting_flag)
         {
@@ -52,7 +53,20 @@ static void get_key_events(CZ01_t *this)
         this->key_setting_flag = true;
         this->key_setting_time = 0;
     }
-
+    /* feed SGL input device via key group */
+    if (key_event[4] == KEY_PRESS)
+    {
+        ui_key_evt = 1;
+    }
+    else if (key_event[4] == KEY_SHORT_PRESS)
+    {
+        ui_key_evt = 2;
+    }
+    else if (key_event[4] == KEY_LONG_PRESS)
+    {
+        ui_key_evt = 2;
+    }
+#if 0
     /* heatting key */
     switch (key_event[0])
     {
@@ -381,8 +395,9 @@ static void get_key_events(CZ01_t *this)
     default:
         break;
     }
+#endif
 }
-
+#if 0
 static void handing_key_event(CZ01_t *this)
 {
     
@@ -1237,9 +1252,9 @@ static void handing_key_event(CZ01_t *this)
 
     
 }
-
+#endif
 void input_handle(CZ01_t *this)
 {
-    handing_key_event(this);
     get_key_events(this);
+    // handing_key_event(this);
 }

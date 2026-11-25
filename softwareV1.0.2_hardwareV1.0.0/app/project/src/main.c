@@ -82,7 +82,7 @@
 int main(void)
 {
   /* add user code begin 1 */
-   nvic_vector_table_set(NVIC_VECTTAB_FLASH, 0x2000);
+   //nvic_vector_table_set(NVIC_VECTTAB_FLASH, 0x2000);
    /* add user code end 1 */
 
   /* system clock config. */
@@ -128,7 +128,7 @@ int main(void)
                         (uint32_t)&ADC1->odt, 
                         DMA1_CHANNEL1_MEMORY_BASE_ADDR, 
                         DMA1_CHANNEL1_BUFFER_SIZE);
-  dma_channel_enable(DMA1_CHANNEL1, FALSE);
+  dma_channel_enable(DMA1_CHANNEL1, TRUE);
 
   /* init dma1 channel2 */
   wk_dma1_channel2_init();
@@ -205,7 +205,7 @@ int main(void)
   {
     /* add user code begin 3 */
 
-      /* add user code end 3 */
+    /* add user code end 3 */
   }
 }
 

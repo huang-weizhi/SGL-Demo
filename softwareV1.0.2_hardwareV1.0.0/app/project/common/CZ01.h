@@ -10,14 +10,13 @@
 #include "at32f415_wk_config.h"
 #include "wk_system.h"
 
-
-
 #include "iap.h"
 #include "Inf_key.h"
 #include "Inf_beep.h"
 #include "Inf_w25qxxx.h"
 #include "Inf_lcd.h"
 #include "Inf_uart.h"
+#include "inf_sgl_port.h"
 
 #include "FreeRTOS.h"
 #include "task.h"

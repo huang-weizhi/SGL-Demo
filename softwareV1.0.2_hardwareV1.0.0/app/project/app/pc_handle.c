@@ -281,7 +281,7 @@ void handing_pc_event(CZ01_t *this)
  *===========================================================================*/
 #define FS_START_LEN   6
 #define FS_TIMEOUT_MS  3000  /* idle time before the transfer is considered done */
-#define FS_WRITE_CHUNK 2048  /* data bytes collected before one flash write */
+#define FS_WRITE_CHUNK 512  /* data bytes collected before one flash write */
 
 static const uint8_t fs_start_seq[FS_START_LEN] = {0xD1,0xAA,0xAA,0xAA,0xAA,0xFC};
 

@@ -76,7 +76,9 @@
 #define UART1_TX_DMA_FDT_FLAG    DMA1_FDT6_FLAG
 
 #define UART1_RX_DMA_SIZE        512U    /* DMA circular buffer, keep a power of 2 */
-#define UART1_RX_RING_SIZE       4096U   /* RX ring, >= 2x the largest frame       */
+//#define UART1_RX_RING_SIZE       4096U   /* RX ring, >= 2x the largest frame       */
+#define UART1_RX_RING_SIZE       1036U   /* RX ring, >= 2x the largest frame       */
+
 #define UART1_TX_RING_SIZE       512U    /* TX queue, >= 2x the largest send chunk */
 #endif
 

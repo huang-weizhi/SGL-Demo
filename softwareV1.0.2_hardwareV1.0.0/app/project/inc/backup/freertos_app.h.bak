@@ -51,10 +51,12 @@
 extern TaskHandle_t input_task_handle;
 extern TaskHandle_t output_task_handle;
 extern TaskHandle_t common_task_handle;
+extern TaskHandle_t wdt_task_handle;
 /* declaration for task function */
 void input_func(void *pvParameters);
 void output_func(void *pvParameters);
 void common_func(void *pvParameters);
+void wdt_function(void *pvParameters);
 
 /* add user code begin 0 */
 
