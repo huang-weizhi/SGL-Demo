@@ -8,10 +8,13 @@ typedef enum
 {
     KEY_NONE = 0,            /* no event */
     KEY_PRESS,               /* instant event on press */
-    KEY_SHORT_PRESS,         /* short press, reported after release */
+    KEY_SHORT_PRESS,         /* short press, reported after release (legacy, no
+                              * longer generated: use KEY_PRESS_RELEASE) */
     KEY_LONG_PRESS,          /* long press, reported when threshold reached */
     KEY_LONG_PRESS_CONTINUE, /* long press held, repeats periodically */
-    KEY_DOUBLE_CLICK         /* double click */
+    KEY_DOUBLE_CLICK,        /* double click */
+    KEY_PRESS_RELEASE,       /* release edge after a short hold (rising edge) */
+    KEY_LONG_PRESS_RELEASE   /* release edge after a long hold (rising edge) */
 } key_event_t;
 
 /* Internal state machine states, not for user use */

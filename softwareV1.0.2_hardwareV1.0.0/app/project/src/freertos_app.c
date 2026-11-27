@@ -14,6 +14,7 @@
 #include "wk_adc.h"
 #include "inf_sgl_port.h"
 #include "ui.h"
+#include "Inf_w25qxxx.h"
 /* add user code end private includes */
 
 /* private typedef -----------------------------------------------------------*/
@@ -211,12 +212,17 @@ void input_func(void *pvParameters)
 void output_func(void *pvParameters)
 {
   /* add user code begin output_func 0 */
+  /* NOTE: do NOT call spiflash_init() here. SPI1 + DMA1_CH2/3 for the W25Q
+   * flash are already initialized once, before the scheduler starts
+   * (main.c: wk_spi1_init + wk_dma init). Calling it again from two
+   * concurrent tasks re-configures the same SPI/DMA in parallel and
+   * corrupts the config -> first flash read hangs in async_done(). */
   lcd_init();
   PID_Init(&handle_pid, 30, 1, 65, MAX_PWM_OUT);
   sgl_port_init();
   sgl_init();
   ui_init();
-  ui_input_init();
+
   // sgl_bench_start();                 /* benchmark HUD: measures render + flush cost */
   /* add user code end output_func 0 */
 
@@ -241,7 +247,6 @@ void output_func(void *pvParameters)
     // sgl_bench_frame_begin();
     // sgl_bench_frame_end();     /* wraps task_handler */
     sgl_task_handler();
-    ui_key_poll();
     sgl_port_flush_finish(); /* release CS + return last FB after the final DMA */
     vTaskDelay(pdMS_TO_TICKS(2));
 

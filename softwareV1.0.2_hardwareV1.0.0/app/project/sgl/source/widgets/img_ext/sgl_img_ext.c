@@ -302,6 +302,12 @@ static void sgl_img_ext_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event
 
             if (img_ext->read != NULL && pixmap_buf != NULL) {
                 sgl_free(pixmap_buf);
+                /* clear the pointer after freeing: img_ext->flash_buffer is
+                 * checked against NULL before the next allocation and freed
+                 * again in SGL_EVENT_DESTROYED. Leaving it dangling caused a
+                 * use-after-free on the next render and a double free at
+                 * destroy time. */
+                img_ext->flash_buffer = NULL;
             }
             return;
         }

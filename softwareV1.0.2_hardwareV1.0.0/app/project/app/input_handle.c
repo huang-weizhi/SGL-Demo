@@ -53,18 +53,42 @@ static void get_key_events(CZ01_t *this)
         this->key_setting_flag = true;
         this->key_setting_time = 0;
     }
+    /* menu navigation. "加" (key_event[3], silkscreen +) moves the
+     * selection UP/BACKWARD (wraps from the first item to the last item,
+     * crossing to page 2's return button); "减" (key_event[2]) moves
+     * DOWN/FORWARD (wraps from page 2's return to page 1's first item).
+     * menu_step (output task) owns the wrapping and page crossing. */
+    if (key_event[3] == KEY_PRESS)
+    {
+        ui_menu_move_request(+1);
+    }
+    if (key_event[2] == KEY_PRESS)
+    {
+        ui_menu_move_request(-1);
+    }
     /* feed SGL input device via key group */
-    if (key_event[4] == KEY_PRESS)
+
+    switch (key_event[4])
     {
-        ui_key_evt = 1;
-    }
-    else if (key_event[4] == KEY_SHORT_PRESS)
-    {
-        ui_key_evt = 2;
-    }
-    else if (key_event[4] == KEY_LONG_PRESS)
-    {
-        ui_key_evt = 2;
+    case KEY_PRESS:
+
+        break;
+    case KEY_LONG_PRESS:
+        ui_page_toggle_request(); /* do NOT touch the SGL tree from this task */
+        break;
+    case KEY_DOUBLE_CLICK:
+
+        break;
+
+    case KEY_LONG_PRESS_RELEASE:
+
+        break;
+    case KEY_PRESS_RELEASE:
+
+        break;
+
+    default:
+        break;
     }
 #if 0
     /* heatting key */

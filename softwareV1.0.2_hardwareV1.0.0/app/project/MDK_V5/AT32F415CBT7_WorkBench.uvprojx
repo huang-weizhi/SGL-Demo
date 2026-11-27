@@ -313,7 +313,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
-            <Optim>7</Optim>
+            <Optim>6</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
@@ -592,6 +592,11 @@
               <FileName>ui_handle.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\app\ui_handle.c</FilePath>
+            </File>
+            <File>
+              <FileName>ui_flash_img.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\app\ui_flash_img.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1121,6 +1126,46 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>sgl_ui</GroupName>
+          <Files>
+            <File>
+              <FileName>event.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\sgl_ui\event.c</FilePath>
+            </File>
+            <File>
+              <FileName>helper.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\sgl_ui\helper.c</FilePath>
+            </File>
+            <File>
+              <FileName>ui.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\sgl_ui\ui.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>sgl_screens</GroupName>
+          <Files>
+            <File>
+              <FileName>screen0.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\sgl_ui\screens\screen0.c</FilePath>
+            </File>
+            <File>
+              <FileName>screen1.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\sgl_ui\screens\screen1.c</FilePath>
+            </File>
+            <File>
+              <FileName>screen2.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\sgl_ui\screens\screen2.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>middlewares/freertos</GroupName>
           <Files>
             <File>
@@ -1162,41 +1207,6 @@
               <FileName>stream_buffer.c</FileName>
               <FileType>1</FileType>
               <FilePath>../../middlewares/freertos/source/stream_buffer.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>sgl_ui</GroupName>
-          <Files>
-            <File>
-              <FileName>event.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\sgl_ui\event.c</FilePath>
-            </File>
-            <File>
-              <FileName>helper.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\sgl_ui\helper.c</FilePath>
-            </File>
-            <File>
-              <FileName>ui.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\sgl_ui\ui.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>sgl_screens</GroupName>
-          <Files>
-            <File>
-              <FileName>screen0.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\sgl_ui\screens\screen0.c</FilePath>
-            </File>
-            <File>
-              <FileName>screen1.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\sgl_ui\screens\screen1.c</FilePath>
             </File>
           </Files>
         </Group>

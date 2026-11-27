@@ -111,4 +111,4 @@
   ..\..\middlewares\freertos\source\portable\GCC\ARM_CM3\portmacro.h \
   ..\..\middlewares\freertos\source\include\mpu_wrappers.h \
   ..\..\middlewares\freertos\source\include\task.h \
-  ..\..\middlewares\freertos\source\include\list.h
+  ..\..\middlewares\freertos\source\include\list.h ..\app\ui_flash_img.h

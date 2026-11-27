@@ -19,13 +19,13 @@
 #define  CONFIG_SGL_BOOT_LOGO                              0  
 #define  CONFIG_SGL_THEME_DARK                             0      
 #define  CONFIG_SGL_HEAP_ALGO                              lwmem  
-#define  CONFIG_SGL_HEAP_MEMORY_SIZE                       6144
-//#define  CONFIG_SGL_HEAP_MEMORY_SIZE                       8192    /* bench measurement mode needs the larger heap */
+//#define  CONFIG_SGL_HEAP_MEMORY_SIZE                       6144
+#define  CONFIG_SGL_HEAP_MEMORY_SIZE                       8192    /* bench measurement mode needs the larger heap */
 #define  CONFIG_SGL_FONT_SONG23                            0      
 #define  CONFIG_SGL_FONT_CONSOLAS14                        1      
 #define  CONFIG_SGL_FONT_CONSOLAS23                        0      
 #define  CONFIG_SGL_FONT_CONSOLAS24                        0      
-#define  CONFIG_SGL_FONT_CONSOLAS32                        0      
+#define  CONFIG_SGL_FONT_CONSOLAS32                        1      
 #define  CONFIG_SGL_FONT_CONSOLAS24_COMPRESS               0    
 
 #endif  //!__SGL_CONFIG_H__

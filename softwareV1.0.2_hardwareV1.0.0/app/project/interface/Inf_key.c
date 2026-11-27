@@ -114,7 +114,9 @@ key_event_t key_event_check(key_obj *key)
                 /* released before the long press threshold */
                 if (key->click_count == 1)
                 {
-                    /* first click: wait for a possible second click */
+                    /* first click: report the release edge, then wait for a
+                     * possible second click */
+                    event = KEY_PRESS_RELEASE;
                     key->state = STATE_WAIT_DOUBLE;
                 }
                 else if (key->click_count >= 2)
@@ -127,8 +129,9 @@ key_event_t key_event_check(key_obj *key)
             }
             else
             {
-                /* held longer than the long press window, then released */
-                event = KEY_SHORT_PRESS;
+                /* held longer than the long press window, then released
+                 * (rare: the long press branch below normally fires first) */
+                event = KEY_LONG_PRESS_RELEASE;
                 key->click_count = 0;
             }
             key->press_count = 0;
@@ -160,6 +163,7 @@ key_event_t key_event_check(key_obj *key)
             key->state = STATE_DEBOUNCE;
             key->long_press_triggered = 0;
             key->press_count = 0;
+            event = KEY_LONG_PRESS_RELEASE; /* rising edge after a long hold */
         }
         else
         {
@@ -189,11 +193,8 @@ key_event_t key_event_check(key_obj *key)
             key->release_count++;
             if (key->release_count >= key->double_click_count)
             {
-                /* window expired: report a single short press */
-                if (key->click_count == 1)
-                {
-                    event = KEY_SHORT_PRESS;
-                }
+                /* window expired: the release edge was already reported as
+                 * KEY_PRESS_RELEASE when the first release was detected */
                 key->state = STATE_RELEASED;
                 key->click_count = 0;
             }
